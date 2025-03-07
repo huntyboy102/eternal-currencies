@@ -1,12 +1,18 @@
 package com.mceternal.eternalcurrencies;
 
+import com.mceternal.eternalcurrencies.command.EternalCurrenciesCommands;
+import com.mceternal.eternalcurrencies.data.EternalCurrenciesRegistries;
+import com.mceternal.eternalcurrencies.data.CurrencyType;
+import com.mceternal.eternalcurrencies.data.CurrencyTypeManager;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
-import net.minecraftforge.event.server.ServerStartingEvent;
+import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -14,6 +20,7 @@ import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.registries.DataPackRegistryEvent;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 import org.slf4j.Logger;
@@ -25,7 +32,12 @@ public class EternalCurrencies {
     // Define mod id in a common place for everything to reference
     public static final String MODID = "eternalcurrencies";
     // Directly reference a slf4j logger
-    private static final Logger LOGGER = LoggerFactory.getLogger(MODID);
+    public static final Logger LOGGER = LoggerFactory.getLogger(MODID);
+
+    public static final ResourceLocation CURRENCIES_CAP_NAME = ResourceLocation.fromNamespaceAndPath(MODID, "currencies");
+
+    private static CurrencyTypeManager CURRENCY_MANAGER;
+
 
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
     
@@ -58,10 +70,10 @@ public class EternalCurrencies {
 
     }
 
-    // You can use SubscribeEvent and let the Event Bus discover methods to call
-    @SubscribeEvent
-    public void onServerStarting(ServerStartingEvent event) {
-
+    public static CurrencyTypeManager getCurrencyManager() {
+        if(CURRENCY_MANAGER == null)
+            throw new IllegalStateException("CurrencyTypeManager hasn't been instantiated yet. Wait until Resources are loaded!");
+        return CURRENCY_MANAGER;
     }
 
     // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
@@ -70,6 +82,25 @@ public class EternalCurrencies {
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event) {
 
+        }
+    }
+
+    @Mod.EventBusSubscriber(modid = MODID)
+    public static class ServerModEvents {
+        @SubscribeEvent
+        public static void registerCommands(RegisterCommandsEvent event) {
+            EternalCurrenciesCommands.register(event.getDispatcher(), event.getBuildContext());
+        }
+
+        //@SubscribeEvent
+        public static void registerCurrencies(DataPackRegistryEvent.NewRegistry event) {
+            event.dataPackRegistry(EternalCurrenciesRegistries.CURRENCY_TYPE, CurrencyType.CODEC);
+        }
+
+        @SubscribeEvent
+        public static void onResourceReload(AddReloadListenerEvent event) {
+            CURRENCY_MANAGER = new CurrencyTypeManager(event.getRegistryAccess());
+            event.addListener(CURRENCY_MANAGER);
         }
     }
 }
