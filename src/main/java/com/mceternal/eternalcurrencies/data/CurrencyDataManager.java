@@ -14,33 +14,32 @@ import net.minecraft.util.profiling.ProfilerFiller;
 
 import java.util.Map;
 
-public class CurrencyTypeManager extends SimpleJsonResourceReloadListener {
+public class CurrencyDataManager extends SimpleJsonResourceReloadListener {
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
     private final HolderLookup.Provider registries;
-    private Map<ResourceLocation, CurrencyType> currencies = ImmutableMap.of();
+    private Map<ResourceLocation, CurrencyData> currencies = ImmutableMap.of();
 
-    public CurrencyTypeManager(HolderLookup.Provider registries) {
+    public CurrencyDataManager(HolderLookup.Provider registries) {
         super(GSON, "currencies");
         this.registries = registries;
     }
 
     @Override
     protected void apply(Map<ResourceLocation, JsonElement> jsonFiles, ResourceManager resourceManager, ProfilerFiller profilerFiller) {
-        ImmutableMap.Builder<ResourceLocation, CurrencyType> builder = ImmutableMap.builder();
+        ImmutableMap.Builder<ResourceLocation, CurrencyData> builder = ImmutableMap.builder();
         //var ops = this.registries != null ? registries : JsonOps.INSTANCE;
         jsonFiles.forEach((location, json) -> {
             EternalCurrencies.LOGGER.info("file location: {}", location.toString());
-            CurrencyType.CODEC.parse(JsonOps.INSTANCE, json).result().ifPresentOrElse((currency) -> builder.put(location, currency),
-                    //TODO use the File's ResourceLocation as the registry entry's. currently it uses one defined in the file.
-                    () -> EternalCurrencies.LOGGER.error("Currency '{}' has errors.", location));
+            CurrencyData.CODEC.parse(JsonOps.INSTANCE, json).result().ifPresentOrElse((currency) -> builder.put(location, currency),
+                    () -> EternalCurrencies.LOGGER.error("Error parsing CurrencyData file '{}'.", location));
         });
 
         this.currencies = builder.build();
     }
 
-    public Map<ResourceLocation, CurrencyType> getAllCurrencies() {
+    public Map<ResourceLocation, CurrencyData> getAllCurrencies() {
         return currencies;
     }
 }

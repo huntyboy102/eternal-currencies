@@ -1,0 +1,12 @@
+{
+  "commands.eternalcurrencies.setbalance.result": "Set Balance of %1$s for %3$s to %2$s",
+  "commands.eternalcurrencies.addcurrency.result": "Added %2$s to Balance of %1$s for %3$s",
+  "commands.eternalcurrencies.removecurrency.result": "Removed %2$s from Balance of %1$s for %3$s",
+  "commands.eternalcurrencies.checkbalance.result": "Balance of %1$s for %3$s: %2$s",
+  "commands.eternalcurrencies.pay.success": "Paid %2$s %1$s to %3$s",
+  "commands.eternalcurrencies.pay.insufficient_balance": "Cannot pay %2$s %1$s to %3$s, insufficient Balance. (%4$s)",
+  "commands.eternalcurrencies.pay.receive": "Received %2$s %1$s from %3$s",
+  "commands.eternalcurrencies.error.unregistered_currency": "Currency \"%s\" does not exist.",
+
+  "currency.eternalcurrencies:coins.name": "Coins"
+}

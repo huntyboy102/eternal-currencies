@@ -2,8 +2,8 @@ package com.mceternal.eternalcurrencies;
 
 import com.mceternal.eternalcurrencies.command.EternalCurrenciesCommands;
 import com.mceternal.eternalcurrencies.data.EternalCurrenciesRegistries;
-import com.mceternal.eternalcurrencies.data.CurrencyType;
-import com.mceternal.eternalcurrencies.data.CurrencyTypeManager;
+import com.mceternal.eternalcurrencies.data.CurrencyData;
+import com.mceternal.eternalcurrencies.data.CurrencyDataManager;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
@@ -36,7 +36,7 @@ public class EternalCurrencies {
 
     public static final ResourceLocation CURRENCIES_CAP_NAME = ResourceLocation.fromNamespaceAndPath(MODID, "currencies");
 
-    private static CurrencyTypeManager CURRENCY_MANAGER;
+    private static CurrencyDataManager CURRENCY_MANAGER;
 
 
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
@@ -70,9 +70,9 @@ public class EternalCurrencies {
 
     }
 
-    public static CurrencyTypeManager getCurrencyManager() {
+    public static CurrencyDataManager getCurrencyManager() {
         if(CURRENCY_MANAGER == null)
-            throw new IllegalStateException("CurrencyTypeManager hasn't been instantiated yet. Wait until Resources are loaded!");
+            throw new IllegalStateException("CurrencyDataManager hasn't been instantiated yet. Wait until Resources are loaded!");
         return CURRENCY_MANAGER;
     }
 
@@ -94,12 +94,12 @@ public class EternalCurrencies {
 
         //@SubscribeEvent
         public static void registerCurrencies(DataPackRegistryEvent.NewRegistry event) {
-            event.dataPackRegistry(EternalCurrenciesRegistries.CURRENCY_TYPE, CurrencyType.CODEC);
+            event.dataPackRegistry(EternalCurrenciesRegistries.CURRENCY_DATA, CurrencyData.CODEC);
         }
 
         @SubscribeEvent
         public static void onResourceReload(AddReloadListenerEvent event) {
-            CURRENCY_MANAGER = new CurrencyTypeManager(event.getRegistryAccess());
+            CURRENCY_MANAGER = new CurrencyDataManager(event.getRegistryAccess());
             event.addListener(CURRENCY_MANAGER);
         }
     }

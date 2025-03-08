@@ -1,7 +1,8 @@
 package com.mceternal.eternalcurrencies.api;
 
 import com.mceternal.eternalcurrencies.EternalCurrencies;
-import com.mceternal.eternalcurrencies.data.CurrencyType;
+import com.mceternal.eternalcurrencies.data.CurrencyData;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
@@ -16,8 +17,16 @@ public class EternalCurrenciesAPI {
      * Gets all registered Currencies.
      * @return Map of all currencies in the Currency Registry.
      */
-    public static Map<ResourceLocation, CurrencyType> getRegisteredCurrencies() {
+    public static Map<ResourceLocation, CurrencyData> getRegisteredCurrencies() {
         return EternalCurrencies.getCurrencyManager().getAllCurrencies();
+    }
+
+    public static CurrencyData getCurrencyData(ResourceLocation currency) {
+        return EternalCurrencies.getCurrencyManager().getAllCurrencies().get(currency);
+    }
+
+    public static Component getCurrencyTranslationComponent(ResourceLocation currency) {
+        return Component.translatable("currency."+ currency +".name");
     }
 
     /**

@@ -2,6 +2,7 @@ package com.mceternal.eternalcurrencies.capability;
 
 import com.mceternal.eternalcurrencies.EternalCurrencies;
 import com.mceternal.eternalcurrencies.api.CurrenciesCapabilities;
+import com.mceternal.eternalcurrencies.api.EternalCurrenciesAPI;
 import com.mceternal.eternalcurrencies.api.ICurrencies;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -56,7 +57,8 @@ public class PlayerCurrencyManager {
 
     @SubscribeEvent
     public static void persistCapability(PlayerEvent.Clone event) {
-        if(event.isWasDeath() && event.getEntity().level().isClientSide) {
+        EternalCurrencies.LOGGER.info("wasDeath: {}, level.isClientside: {}", event.isWasDeath(), event.getEntity().level().isClientSide);
+        if(event.isWasDeath() && !event.getEntity().level().isClientSide) {
             Player deadPlayer = event.getOriginal();
             deadPlayer.reviveCaps();
 

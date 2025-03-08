@@ -45,7 +45,6 @@ public class PlayerCurrencyCapability implements ICurrencies {
     @Override
     public void add(ResourceLocation currency, long amount) {
         balances.merge(currency, amount, Long::sum);
-        //balances.compute(currencyType, (k, currentAmount) -> currentAmount != null ? currentAmount + amount : amount);
     }
 
     @Override
