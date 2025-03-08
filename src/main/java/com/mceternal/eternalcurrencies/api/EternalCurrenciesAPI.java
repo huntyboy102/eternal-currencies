@@ -49,9 +49,7 @@ public class EternalCurrenciesAPI {
      */
     public static long getBalanceFor(Player player, ResourceLocation currency) {
         AtomicLong amount = new AtomicLong(-1L);
-        player.getCapability(CurrenciesCapabilities.PLAYER_CURRENCY).ifPresent(currencies -> {
-            amount.set(currencies.getCurrency(currency));
-        });
+        player.getCapability(CurrenciesCapabilities.PLAYER_CURRENCY).ifPresent(currencies -> amount.set(currencies.getCurrency(currency)));
 
         return amount.get();
     }
@@ -63,9 +61,7 @@ public class EternalCurrenciesAPI {
      * @param amount Amount to add to the Player's Balance
      */
     public static void addBalanceFor(Player player, ResourceLocation currency, long amount) {
-        player.getCapability(CurrenciesCapabilities.PLAYER_CURRENCY).ifPresent(currencies -> {
-            currencies.add(currency, amount);
-        });
+        player.getCapability(CurrenciesCapabilities.PLAYER_CURRENCY).ifPresent(currencies -> currencies.add(currency, amount));
     }
 
     /**

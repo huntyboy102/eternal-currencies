@@ -63,9 +63,7 @@ public class PlayerCurrencyCapability implements ICurrencies {
 
     @Override
     public void deserializeNBT(CompoundTag tag) {
-        tag.getAllKeys().forEach(identifier -> {
-            balances.put(ResourceLocation.parse(identifier), tag.getLong(identifier));
-        });
+        tag.getAllKeys().forEach(identifier -> balances.put(ResourceLocation.parse(identifier), tag.getLong(identifier)));
     }
 
     @Override

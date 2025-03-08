@@ -30,11 +30,8 @@ public class EternalCurrenciesCommands {
             SharedSuggestionProvider.suggest(EternalCurrenciesAPI.getRegisteredCurrencies().keySet()
                     .stream().map(ResourceLocation::toString), suggestions);
 
-    private static ArgumentBuilder<CommandSourceStack, RequiredArgumentBuilder<CommandSourceStack, ResourceLocation>> CURRENCY_ARGS;
-
-
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext buildContext) {
-        EternalCurrencies.LOGGER.info("Fired Command Registry!");
+        //EternalCurrencies.LOGGER.info("Fired Command Registry!");
         //TODO: addbalance, removebalance, checkbalance, and pay commands. also consider if these should be individual commands, or subcommands.
 
         //Set Balance
@@ -49,10 +46,8 @@ public class EternalCurrenciesCommands {
 
         dispatcher.register(Commands.literal("listcurrencies")
                 .executes(commandContext -> {
-                    EternalCurrenciesAPI.getRegisteredCurrencies().forEach((location, currencyType) -> {
-                        commandContext.getSource().sendSystemMessage(
-                                Component.literal("identifier="+ location +" icon="+currencyType.icon()));
-                    });
+                    EternalCurrenciesAPI.getRegisteredCurrencies().forEach((location, currencyType) ->
+                            commandContext.getSource().sendSystemMessage(Component.literal("identifier="+ location +" icon="+currencyType.icon())));
                     return Command.SINGLE_SUCCESS;
                 }));
     }

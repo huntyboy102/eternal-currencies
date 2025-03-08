@@ -35,7 +35,7 @@ public interface ICurrencies {
     /**
      * Attempts to take the specified Amount from the Balance for the specified Currency, without going below the Threshold.
      * </p> Returns false if the Balance is insufficient, and true if it is sufficient.
-     * @param currency Currency to try and take from
+     * @param currency Currency to try and take from the Balance of
      * @param amount Amount to take from the Balance
      * @param threshold Threshold to avoid going below
      * @return If the Balance can be reduced by this much without going below the Threshold
@@ -45,8 +45,8 @@ public interface ICurrencies {
     /**
      * Takes the specified Amount from the Balance for the specified Currency.
      * </p> Can drain indefinitely into the negatives.
-     * @param currency
-     * @param amount
+     * @param currency Currency to take from the Balance of
+     * @param amount Amount to take from the Balance
      */
     void take(ResourceLocation currency, long amount);
 

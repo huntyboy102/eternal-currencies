@@ -1,6 +1,5 @@
 package com.mceternal.eternalcurrencies.data;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -35,7 +34,7 @@ public class CurrencyTypeManager extends SimpleJsonResourceReloadListener {
             EternalCurrencies.LOGGER.info("file location: {}", location.toString());
             CurrencyType.CODEC.parse(JsonOps.INSTANCE, json).result().ifPresentOrElse((currency) -> builder.put(location, currency),
                     //TODO use the File's ResourceLocation as the registry entry's. currently it uses one defined in the file.
-                    () -> EternalCurrencies.LOGGER.error("Currency '{}' has errors.", location.toString()));
+                    () -> EternalCurrencies.LOGGER.error("Currency '{}' has errors.", location));
         });
 
         this.currencies = builder.build();
