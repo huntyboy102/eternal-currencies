@@ -13,8 +13,8 @@ public class PlayerCurrencyCapability implements ICurrencies {
     Map<ResourceLocation, Long> balances = new HashMap<>();
 
     @Override
-    public long getCurrency(ResourceLocation currencyType) {
-        return 0;
+    public long getCurrency(ResourceLocation currency) {
+        return balances.get(currency);
     }
 
     @Override
@@ -24,8 +24,13 @@ public class PlayerCurrencyCapability implements ICurrencies {
 
     @Override
     public boolean tryTake(ResourceLocation currency, long amount) {
+        return tryTake(currency, amount, 0);
+    }
+
+    @Override
+    public boolean tryTake(ResourceLocation currency, long amount, long threshold) {
         long currentAmount = balances.get(currency);
-        if(currentAmount >= amount) {
+        if((currentAmount + threshold) >= amount) {
             balances.merge(currency, amount, (existingAmount, addedAmount) -> Long.sum(existingAmount, -addedAmount));
             return true;
         }
@@ -38,8 +43,8 @@ public class PlayerCurrencyCapability implements ICurrencies {
     }
 
     @Override
-    public void add(ResourceLocation currencyType, long amount) {
-        balances.merge(currencyType, amount, Long::sum);
+    public void add(ResourceLocation currency, long amount) {
+        balances.merge(currency, amount, Long::sum);
         //balances.compute(currencyType, (k, currentAmount) -> currentAmount != null ? currentAmount + amount : amount);
     }
 

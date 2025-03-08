@@ -4,8 +4,9 @@ import com.mceternal.eternalcurrencies.EternalCurrencies;
 import com.mceternal.eternalcurrencies.data.CurrencyType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.common.util.LazyOptional;
 
-import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -13,11 +14,20 @@ public class EternalCurrenciesAPI {
 
     /**
      * Gets all registered Currencies.
-     * @return List of all currencies in the Currency Registry.
+     * @return Map of all currencies in the Currency Registry.
      */
-    public static List<CurrencyType> getRegisteredCurrencies() {
-        EternalCurrencies.LOGGER.info("EternalCurrenciesAPI#getRegisteredCurrencies() was accessed!");
+    public static Map<ResourceLocation, CurrencyType> getRegisteredCurrencies() {
         return EternalCurrencies.getCurrencyManager().getAllCurrencies();
+    }
+
+    /**
+     * Gets a Player's Currency Capability.
+     * </p> Recommended when doing multiple operations
+     * @param player Player to get the Currency Capability of
+     * @return Player's Currency Capability, use {@link LazyOptional#ifPresent} to safely execute.
+     */
+    public static LazyOptional<ICurrencies> getCurrencies(Player player) {
+        return player.getCapability(CurrenciesCapabilities.PLAYER_CURRENCY);
     }
 
     /**
@@ -65,7 +75,7 @@ public class EternalCurrenciesAPI {
      * @param amount Amount to remove from the Player's Balance
      * @return If the Player's Balance could be decreased without going below 0
      */
-    public static boolean removeBalanceFor(Player player, ResourceLocation currency, long amount) {
+    public static boolean takeBalanceFor(Player player, ResourceLocation currency, long amount) {
         AtomicBoolean success = new AtomicBoolean(false);
         player.getCapability(CurrenciesCapabilities.PLAYER_CURRENCY).ifPresent(currencies ->
                 success.set(currencies.tryTake(currency, amount)));
@@ -73,15 +83,19 @@ public class EternalCurrenciesAPI {
     }
 
     /**
-     * Removes the specified amount from the Player's Balance for the specified Currency
-     * @param player
-     * @param currency
-     * @param amount
-     * @param threshold
-     * @return
+     * Removes the specified amount from the Player's Balance for the specified Currency, but only if it would not go below the Threshold
+     * </p> Can be used to allow "Debt" up to a limit.
+     * @param player Player to remove Currency from
+     * @param currency Currency to remove from the Player's Balance of
+     * @param amount Amount to remove from the Player's Balance
+     * @param threshold Minimum amount
+     * @return If the Player's Balance could be decreased without going below the Threshold
      */
-    public static boolean removeBalanceWithThreshold(Player player, ResourceLocation currency, long amount, long threshold) {
-        return false;
+    public static boolean takeBalanceWithThreshold(Player player, ResourceLocation currency, long amount, long threshold) {
+        AtomicBoolean success = new AtomicBoolean(false);
+        player.getCapability(CurrenciesCapabilities.PLAYER_CURRENCY).ifPresent(currencies ->
+                success.set(currencies.tryTake(currency, amount, threshold)));
+        return success.get();
     }
 
     /**
@@ -90,7 +104,7 @@ public class EternalCurrenciesAPI {
      * @param currency Currency to remove from the Player's Balance of
      * @param amount Amount to remove from the Player's Balance
      */
-    public static void removeAnywayFor(Player player, ResourceLocation currency, long amount) {
+    public static void takeAnywayFor(Player player, ResourceLocation currency, long amount) {
         player.getCapability(CurrenciesCapabilities.PLAYER_CURRENCY).ifPresent(currencies ->
                 currencies.take(currency, amount));
     }

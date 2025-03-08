@@ -2,22 +2,22 @@ package com.mceternal.eternalcurrencies.command;
 
 import com.mceternal.eternalcurrencies.EternalCurrencies;
 import com.mceternal.eternalcurrencies.api.EternalCurrenciesAPI;
-import com.mceternal.eternalcurrencies.data.CurrencyType;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.LongArgumentType;
-import com.mojang.brigadier.arguments.StringArgumentType;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.builder.ArgumentBuilder;
+import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
-import net.minecraft.commands.CommandBuildContext;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
-import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.commands.*;
+import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+
+import java.util.function.BiFunction;
 
 public class EternalCurrenciesCommands {
 
@@ -27,40 +27,50 @@ public class EternalCurrenciesCommands {
             ));
 
     private static final SuggestionProvider<CommandSourceStack> SUGGEST_CURRENCIES = (context, suggestions) ->
-            SharedSuggestionProvider.suggest(EternalCurrenciesAPI.getRegisteredCurrencies().stream()
-                .map(currency -> currency.type().toString()), suggestions);
+            SharedSuggestionProvider.suggest(EternalCurrenciesAPI.getRegisteredCurrencies().keySet()
+                    .stream().map(ResourceLocation::toString), suggestions);
+
+    private static ArgumentBuilder<CommandSourceStack, RequiredArgumentBuilder<CommandSourceStack, ResourceLocation>> CURRENCY_ARGS;
+
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext buildContext) {
         EternalCurrencies.LOGGER.info("Fired Command Registry!");
         //TODO: addbalance, removebalance, checkbalance, and pay commands. also consider if these should be individual commands, or subcommands.
 
         //Set Balance
-        dispatcher.register(withCurrencyArgs(Commands.literal("setbalance"))
-                        .executes(context -> setBalance(
-                                ResourceLocationArgument.getId(context, "currency"),
-                                LongArgumentType.getLong(context, "amount"),
-                                context.getSource().getPlayer())));
+        dispatcher.register(Commands.literal("setbalance").then(
+                withCurrencyArgs((context, player) -> setBalance(
+                        ResourceLocationArgument.getId(context, "currency"),
+                        LongArgumentType.getLong(context, "amount"),
+                        player,
+                        context
+                ))
+        ));
 
         dispatcher.register(Commands.literal("listcurrencies")
                 .executes(commandContext -> {
-                    for (CurrencyType registeredCurrency : EternalCurrenciesAPI.getRegisteredCurrencies()) {
-                        commandContext.getSource().sendSystemMessage(Component.literal("identifier="+ registeredCurrency.type().toString() +" icon="+registeredCurrency.icon()));
-                    }
+                    EternalCurrenciesAPI.getRegisteredCurrencies().forEach((location, currencyType) -> {
+                        commandContext.getSource().sendSystemMessage(
+                                Component.literal("identifier="+ location +" icon="+currencyType.icon()));
+                    });
                     return Command.SINGLE_SUCCESS;
                 }));
     }
 
-    public static LiteralArgumentBuilder<CommandSourceStack> withCurrencyArgs(LiteralArgumentBuilder<CommandSourceStack> command) {
-        return command
-                .requires(player -> player.hasPermission(2))
-                .then(Commands.argument("currency", StringArgumentType.string())
-                        .suggests(SUGGEST_CURRENCIES)
-                        .then(Commands.argument("amount", LongArgumentType.longArg())));
+    public static ArgumentBuilder<CommandSourceStack, RequiredArgumentBuilder<CommandSourceStack, ResourceLocation>> withCurrencyArgs(
+            BiFunction<CommandContext<CommandSourceStack>, ServerPlayer, Integer> executor) { //TODO separate into "withCurrencyArgs" and "withDefaultOrSpecifiedPlayer" for commands which *can* target a player.
+        return Commands.argument("currency", ResourceLocationArgument.id())
+                .suggests(SUGGEST_CURRENCIES)
+                .then(Commands.argument("amount", LongArgumentType.longArg())
+                        .executes(context -> executor.apply(context, context.getSource().getPlayer()))
+                        .then(Commands.argument("player", EntityArgument.player())
+                                .executes(context -> executor.apply(context, EntityArgument.getPlayer(context, "player")))));
     }
 
-
-    private static int setBalance(ResourceLocation type, long amount, ServerPlayer targetPlayer) {
+    private static int setBalance(ResourceLocation type, long amount, ServerPlayer targetPlayer, CommandContext<CommandSourceStack> context) {
         EternalCurrenciesAPI.setBalanceFor(targetPlayer, type, amount);
+        context.getSource().sendSystemMessage(
+                Component.literal("set Balance of "+ type.toString() +" for "+ targetPlayer.getGameProfile().getName() +" to "+ amount));
         return Command.SINGLE_SUCCESS;
     }
 }
