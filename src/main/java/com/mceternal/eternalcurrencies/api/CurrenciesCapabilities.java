@@ -6,5 +6,5 @@ import net.minecraftforge.common.capabilities.CapabilityToken;
 
 public class CurrenciesCapabilities {
 
-    public static final Capability<ICurrencies> PLAYER_CURRENCY = CapabilityManager.get(new CapabilityToken<>() {});
+    public static final Capability<ICurrencies> CURRENCY_BEARER = CapabilityManager.get(new CapabilityToken<>() {});
 }

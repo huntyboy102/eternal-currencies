@@ -1,6 +1,5 @@
 package com.mceternal.eternalcurrencies.command;
 
-import com.mceternal.eternalcurrencies.EternalCurrencies;
 import com.mceternal.eternalcurrencies.api.EternalCurrenciesAPI;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;

@@ -27,7 +27,7 @@ public class PlayerCurrencyManager {
 
             ICurrencies playerCurrenciesCap = new PlayerCurrencyCapability();
             LazyOptional<ICurrencies> opt = LazyOptional.of(() -> playerCurrenciesCap);
-            Capability<ICurrencies> capability = CurrenciesCapabilities.PLAYER_CURRENCY;
+            Capability<ICurrencies> capability = CurrenciesCapabilities.CURRENCY_BEARER;
 
             ICapabilityProvider provider = new ICapabilitySerializable<CompoundTag>() {
                 @Override
@@ -60,8 +60,8 @@ public class PlayerCurrencyManager {
             Player deadPlayer = event.getOriginal();
             deadPlayer.reviveCaps();
 
-            event.getEntity().getCapability(CurrenciesCapabilities.PLAYER_CURRENCY).ifPresent(cap ->
-                    deadPlayer.getCapability(CurrenciesCapabilities.PLAYER_CURRENCY).ifPresent(cap::copy));
+            event.getEntity().getCapability(CurrenciesCapabilities.CURRENCY_BEARER).ifPresent(cap ->
+                    deadPlayer.getCapability(CurrenciesCapabilities.CURRENCY_BEARER).ifPresent(cap::copy));
 
             deadPlayer.invalidateCaps();
         }
