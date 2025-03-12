@@ -4,6 +4,7 @@ import com.mceternal.eternalcurrencies.command.EternalCurrenciesCommands;
 import com.mceternal.eternalcurrencies.data.EternalCurrenciesRegistries;
 import com.mceternal.eternalcurrencies.data.CurrencyData;
 import com.mceternal.eternalcurrencies.data.CurrencyDataManager;
+import com.mceternal.eternalcurrencies.integration.ftbquests.QuestsIntegration;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
@@ -12,11 +13,13 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
+import net.minecraftforge.event.OnDatapackSyncEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -38,6 +41,8 @@ public class EternalCurrencies {
 
     private static CurrencyDataManager CURRENCY_MANAGER;
 
+    public static boolean FTBQ_LOADED = ModList.get().isLoaded("ftbquests");
+
 
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
     
@@ -57,8 +62,13 @@ public class EternalCurrencies {
         // Register the item to a creative tab
         modEventBus.addListener(this::addCreative);
 
+        if(FTBQ_LOADED)
+            QuestsIntegration.init();
+
+        DistExecutor.runWhenOn(Dist.CLIENT, EternalCurrenciesClient::new);
+
         // Register our mod's ForgeConfigSpec so that Forge can create and load the config file for us
-        context.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+        //context.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
@@ -82,6 +92,12 @@ public class EternalCurrencies {
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event) {
 
+        }
+
+        //TODO this might be a really stupid solution
+        @SubscribeEvent
+        public static void onDatapackSync(OnDatapackSyncEvent event) {
+            //TODO figure out how to sync currency manager to client, so that currency icons can be accessed
         }
     }
 

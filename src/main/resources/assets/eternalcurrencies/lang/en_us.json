@@ -8,5 +8,14 @@
   "commands.eternalcurrencies.pay.receive": "Received %2$s %1$s from %3$s",
   "commands.eternalcurrencies.error.unregistered_currency": "Currency \"%s\" does not exist.",
 
-  "currency.eternalcurrencies:coins.name": "Coins"
+  "currency.eternalcurrencies:coins.name": "Coins",
+  "currency.eternalcurrencies:coins.name.with_amount": "%s Coins",
+
+  "ftbquests.reward.eternalcurrencies.currency": "Currency Reward",
+  "ftbquests.reward.eternalcurrencies.currency.currency": "Currency",
+  "ftbquests.reward.eternalcurrencies.currency.amount": "Currency Amount",
+
+  "ftbquests.task.eternalcurrencies.currency": "Currency",
+  "ftbquests.task.eternalcurrencies.currency.currency": "Currency",
+  "ftbquests.task.eternalcurrencies.currency.amount": "Currency Amount"
 }

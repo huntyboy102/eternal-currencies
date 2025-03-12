@@ -3,6 +3,7 @@ package com.mceternal.eternalcurrencies.api;
 import com.mceternal.eternalcurrencies.EternalCurrencies;
 import com.mceternal.eternalcurrencies.data.CurrencyData;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
@@ -25,8 +26,12 @@ public class EternalCurrenciesAPI {
         return EternalCurrencies.getCurrencyManager().getAllCurrencies().get(currency);
     }
 
-    public static Component getCurrencyTranslationComponent(ResourceLocation currency) {
+    public static MutableComponent getCurrencyTranslationComponent(ResourceLocation currency) {
         return Component.translatable("currency."+ currency +".name");
+    }
+
+    public static MutableComponent getCurrencyTranslationComponent(ResourceLocation currency, long amount) {
+        return Component.translatable("currency."+ currency +".name.with_amount", amount);
     }
 
     /**

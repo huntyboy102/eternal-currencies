@@ -176,8 +176,8 @@ dependencies {
     implementation fg.deobf("curse.maven:ftb-quests-forge-289412:6259628")
     implementation fg.deobf("curse.maven:ftb-teams-forge-404468:6130786")
     implementation fg.deobf("curse.maven:ftb-library-forge-404465:6164053")
+    implementation fg.deobf("dev.architectury:architectury-forge:9.2.14")
 
-    runtimeOnly fg.deobf("dev.architectury:architectury-forge:9.2.14")
     runtimeOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge:${jei_version}")
 }
 
