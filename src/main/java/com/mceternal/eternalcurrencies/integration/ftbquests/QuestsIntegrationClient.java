@@ -11,6 +11,7 @@ import net.minecraft.resources.ResourceLocation;
 
 import java.util.List;
 
+//TODO possibly deprecate this class. setting it up as desired may be too complicated.
 public class QuestsIntegrationClient {
 
     public static void setupTaskGuiProviders() {
