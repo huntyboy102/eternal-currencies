@@ -1,6 +1,5 @@
 package com.mceternal.eternalcurrencies.data;
 
-import com.google.common.collect.ImmutableMap;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.Map;

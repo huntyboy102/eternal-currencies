@@ -8,13 +8,13 @@ import net.minecraft.resources.ResourceLocation;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PlayerCurrencyCapability implements ICurrencies {
+public class CurrencyHolderCapability implements ICurrencies {
 
     Map<ResourceLocation, Long> balances = new HashMap<>();
 
     @Override
     public long getCurrency(ResourceLocation currency) {
-        return balances.get(currency);
+        return balances.getOrDefault(currency, 0L);
     }
 
     @Override
@@ -29,7 +29,7 @@ public class PlayerCurrencyCapability implements ICurrencies {
 
     @Override
     public boolean tryTake(ResourceLocation currency, long amount, long threshold) {
-        long currentAmount = balances.get(currency);
+        long currentAmount = getCurrency(currency);
         if((currentAmount + threshold) >= amount) {
             balances.merge(currency, amount, (existingAmount, addedAmount) -> Long.sum(existingAmount, -addedAmount));
             return true;

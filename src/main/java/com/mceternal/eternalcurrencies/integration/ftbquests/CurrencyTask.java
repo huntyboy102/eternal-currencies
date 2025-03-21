@@ -26,7 +26,7 @@ public class CurrencyTask extends Task {
     private long amount;
 
     public CurrencyTask(long id, Quest quest) {
-        this(id, quest, ResourceLocation.fromNamespaceAndPath(EternalCurrencies.MODID, "coins"), 10);
+        this(id, quest, new ResourceLocation(EternalCurrencies.MODID, "coins"), 10);
     }
 
     public CurrencyTask(long id, Quest quest, ResourceLocation currency, long amount) {
@@ -90,7 +90,7 @@ public class CurrencyTask extends Task {
         config.addEnum("currency", currency, value -> currency = value, NameMap.of(currency, currencies)
                 .name(value -> Component.literal(value.toString()))
                 .icon(value -> Icon.getIcon(EternalCurrenciesAPI.getCurrencyData(value).icon()))
-                .create(), ResourceLocation.fromNamespaceAndPath(EternalCurrencies.MODID, "coins"));
+                .create(), new ResourceLocation(EternalCurrencies.MODID, "coins"));
 
         config.addLong("amount", amount, value -> amount = value, 10L, 1L, Long.MAX_VALUE);
     }

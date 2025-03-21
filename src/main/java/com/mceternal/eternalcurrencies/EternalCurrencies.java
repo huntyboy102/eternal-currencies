@@ -38,7 +38,7 @@ public class EternalCurrencies {
     // Directly reference a slf4j logger
     public static final Logger LOGGER = LoggerFactory.getLogger(MODID);
 
-    public static final ResourceLocation CURRENCIES_CAP_NAME = ResourceLocation.fromNamespaceAndPath(MODID, "currencies");
+    public static final ResourceLocation CURRENCIES_CAP_NAME = new ResourceLocation(MODID, "currencies");
 
     public static CurrencyDataHolder CURRENCY_DATA_HOLDER;
 

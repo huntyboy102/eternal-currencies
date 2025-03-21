@@ -10,7 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 
 public class QuestsIntegration {
 
-    public static final Icon COINS_ICON = Icon.getIcon(ResourceLocation.fromNamespaceAndPath(EternalCurrencies.MODID, "textures/currencies/coins.png"));
+    public static final Icon COINS_ICON = Icon.getIcon(new ResourceLocation(EternalCurrencies.MODID, "textures/currencies/coins.png"));
 
     public static void init() {
         Rewards.init();
@@ -21,7 +21,7 @@ public class QuestsIntegration {
         public static RewardType CURRENCY;
 
         public static void init() {
-            CURRENCY = RewardTypes.register(ResourceLocation.fromNamespaceAndPath(EternalCurrencies.MODID, "currency"), CurrencyReward::new,
+            CURRENCY = RewardTypes.register(new ResourceLocation(EternalCurrencies.MODID, "currency"), CurrencyReward::new,
                     () -> COINS_ICON);
         }
     }
@@ -30,7 +30,7 @@ public class QuestsIntegration {
         public static TaskType CURRENCY;
 
         public static void init() {
-            CURRENCY = TaskTypes.register(ResourceLocation.fromNamespaceAndPath(EternalCurrencies.MODID, "currency"), CurrencyTask::new,
+            CURRENCY = TaskTypes.register(new ResourceLocation(EternalCurrencies.MODID, "currency"), CurrencyTask::new,
                     () -> COINS_ICON);
         }
     }

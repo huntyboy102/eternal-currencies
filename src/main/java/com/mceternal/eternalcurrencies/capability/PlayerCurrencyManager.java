@@ -25,7 +25,7 @@ public class PlayerCurrencyManager {
     public static void attachPlayerCapability(AttachCapabilitiesEvent<Entity> event) {
         if(event.getObject() instanceof Player) {
 
-            ICurrencies playerCurrenciesCap = new PlayerCurrencyCapability();
+            ICurrencies playerCurrenciesCap = new CurrencyHolderCapability();
             LazyOptional<ICurrencies> opt = LazyOptional.of(() -> playerCurrenciesCap);
             Capability<ICurrencies> capability = CurrenciesCapabilities.CURRENCY_BEARER;
 
