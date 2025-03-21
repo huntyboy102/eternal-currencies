@@ -8,8 +8,6 @@ public class EternalCurrenciesClient implements Runnable {
 
     @Override
     public void run() {
-        EternalCurrencies.LOGGER.info("EternalCurrenciesClient run!");
-
         if(FTBQ_LOADED) {
             //QuestsIntegrationClient.setupRewardGuiProviders();
             //QuestsIntegrationClient.setupTaskGuiProviders();

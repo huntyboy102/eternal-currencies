@@ -1,10 +1,12 @@
 package com.mceternal.eternalcurrencies;
 
 import com.mceternal.eternalcurrencies.command.EternalCurrenciesCommands;
+import com.mceternal.eternalcurrencies.data.CurrencyDataHolder;
 import com.mceternal.eternalcurrencies.data.EternalCurrenciesRegistries;
 import com.mceternal.eternalcurrencies.data.CurrencyData;
 import com.mceternal.eternalcurrencies.data.CurrencyDataManager;
 import com.mceternal.eternalcurrencies.integration.ftbquests.QuestsIntegration;
+import com.mceternal.eternalcurrencies.network.PacketHandler;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
@@ -13,7 +15,6 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
-import net.minecraftforge.event.OnDatapackSyncEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -39,7 +40,7 @@ public class EternalCurrencies {
 
     public static final ResourceLocation CURRENCIES_CAP_NAME = ResourceLocation.fromNamespaceAndPath(MODID, "currencies");
 
-    private static CurrencyDataManager CURRENCY_MANAGER;
+    public static CurrencyDataHolder CURRENCY_DATA_HOLDER;
 
     public static boolean FTBQ_LOADED = ModList.get().isLoaded("ftbquests");
 
@@ -71,8 +72,15 @@ public class EternalCurrencies {
         //context.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
 
-    private void commonSetup(final FMLCommonSetupEvent event) {
+    private void preInit(FMLCommonSetupEvent event) {
 
+    }
+
+    private void commonSetup(final FMLCommonSetupEvent event) {
+        event.enqueueWork(() -> {
+            PacketHandler.register();
+            EternalCurrencies.LOGGER.info("registered Packets");
+        });
     }
 
     // Add the example block item to the building blocks tab
@@ -80,10 +88,10 @@ public class EternalCurrencies {
 
     }
 
-    public static CurrencyDataManager getCurrencyManager() {
-        if(CURRENCY_MANAGER == null)
-            throw new IllegalStateException("CurrencyDataManager hasn't been instantiated yet. Wait until Resources are loaded!");
-        return CURRENCY_MANAGER;
+    public static CurrencyDataHolder getCurrencyHolder() {
+        if(CURRENCY_DATA_HOLDER == null)
+            throw new IllegalStateException("CurrencyDataHolder hasn't been instantiated yet. Wait until Resources are loaded!");
+        return CURRENCY_DATA_HOLDER;
     }
 
     // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
@@ -92,12 +100,6 @@ public class EternalCurrencies {
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event) {
 
-        }
-
-        //TODO this might be a really stupid solution
-        @SubscribeEvent
-        public static void onDatapackSync(OnDatapackSyncEvent event) {
-            //TODO figure out how to sync currency manager to client, so that currency icons can be accessed
         }
     }
 
@@ -115,8 +117,8 @@ public class EternalCurrencies {
 
         @SubscribeEvent
         public static void onResourceReload(AddReloadListenerEvent event) {
-            CURRENCY_MANAGER = new CurrencyDataManager(event.getRegistryAccess());
-            event.addListener(CURRENCY_MANAGER);
+            CURRENCY_DATA_HOLDER = new CurrencyDataManager(event.getRegistryAccess());
+            event.addListener((CurrencyDataManager) CURRENCY_DATA_HOLDER);
         }
     }
 }

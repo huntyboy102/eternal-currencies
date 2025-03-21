@@ -14,7 +14,7 @@ import net.minecraft.util.profiling.ProfilerFiller;
 
 import java.util.Map;
 
-public class CurrencyDataManager extends SimpleJsonResourceReloadListener {
+public class CurrencyDataManager extends SimpleJsonResourceReloadListener implements CurrencyDataHolder {
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
@@ -32,7 +32,10 @@ public class CurrencyDataManager extends SimpleJsonResourceReloadListener {
         //var ops = this.registries != null ? registries : JsonOps.INSTANCE;
         jsonFiles.forEach((location, json) -> {
             EternalCurrencies.LOGGER.info("file location: {}", location.toString());
-            CurrencyData.CODEC.parse(JsonOps.INSTANCE, json).result().ifPresentOrElse((currency) -> builder.put(location, currency),
+            CurrencyData.CODEC.parse(JsonOps.INSTANCE, json).result().ifPresentOrElse((currency) -> {
+                if(currency.enabled())
+                    builder.put(location, currency);
+                },
                     () -> EternalCurrencies.LOGGER.error("Error parsing CurrencyData file '{}'.", location));
         });
 

@@ -19,11 +19,11 @@ public class EternalCurrenciesAPI {
      * @return Map of all currencies in the Currency Registry.
      */
     public static Map<ResourceLocation, CurrencyData> getRegisteredCurrencies() {
-        return EternalCurrencies.getCurrencyManager().getAllCurrencies();
+        return EternalCurrencies.getCurrencyHolder().getAllCurrencies();
     }
 
     public static CurrencyData getCurrencyData(ResourceLocation currency) {
-        return EternalCurrencies.getCurrencyManager().getAllCurrencies().get(currency);
+        return EternalCurrencies.getCurrencyHolder().getAllCurrencies().get(currency);
     }
 
     public static MutableComponent getCurrencyTranslationComponent(ResourceLocation currency) {
