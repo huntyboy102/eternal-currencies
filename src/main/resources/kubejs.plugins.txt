@@ -1,0 +1,1 @@
+com.mceternal.eternalcurrencies.integration.kubejs.EternalCurrenciesKJSPlugin
