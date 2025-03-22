@@ -12,6 +12,8 @@ Currently exclusive to Forge 1.20.1. Ports will be done as needed.
 - Native FTB Quests integration. Currency Tasks and Rewards!
 - Native KubeJS integration. access our API by name, without any setup!
 - Commands to edit the Currency levels of players.
+- [Future] Modpack/Server Shop GUI similar to FTB Money, with support for assigning multiple currencies to shop entries, either required or a choice between.
+- [Future] Player Shop system, details are undecided.
 
 
 ### Mod Pages
