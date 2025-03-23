@@ -63,7 +63,7 @@ public class CurrencyTask extends Task {
     @Override
     public void readData(CompoundTag nbt) {
         super.readData(nbt);
-        currency = ResourceLocation.parse(nbt.getString("currency"));
+        currency = new ResourceLocation(nbt.getString("currency"));
         amount = nbt.getLong("amount");
     }
 
@@ -77,7 +77,7 @@ public class CurrencyTask extends Task {
     @Override
     public void readNetData(FriendlyByteBuf buffer) {
         super.readNetData(buffer);
-        currency = ResourceLocation.parse(buffer.readUtf());
+        currency = new ResourceLocation(buffer.readUtf());
         amount = buffer.readLong();
     }
 
