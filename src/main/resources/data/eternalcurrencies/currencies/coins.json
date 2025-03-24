@@ -1,3 +1,4 @@
 {
-  "icon": "eternalcurrencies:textures/currencies/coins.png"
+  "icon": "eternalcurrencies:textures/currencies/coins.png",
+  "textColor": "gold"
 }

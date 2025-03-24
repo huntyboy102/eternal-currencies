@@ -20,6 +20,7 @@ public class S2CSyncCurrencyRegistryPacket implements IntSupplier {
         this.currencyHolder = EternalCurrencies.CURRENCY_DATA_HOLDER;
     }
 
+    //TODO make this packet resend on data reload, since currencies can be reloaded then
     public S2CSyncCurrencyRegistryPacket(FriendlyByteBuf buf) {
         //EternalCurrencies.LOGGER.info("received SyncCurrencyRegistryPacket from server");
         short size = buf.readShort();

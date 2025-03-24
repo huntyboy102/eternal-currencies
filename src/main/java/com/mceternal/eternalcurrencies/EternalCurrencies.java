@@ -6,11 +6,15 @@ import com.mceternal.eternalcurrencies.data.EternalCurrenciesRegistries;
 import com.mceternal.eternalcurrencies.data.CurrencyData;
 import com.mceternal.eternalcurrencies.data.CurrencyDataManager;
 import com.mceternal.eternalcurrencies.integration.ftbquests.QuestsIntegration;
+import com.mceternal.eternalcurrencies.item.EternalCurrenciesItems;
+import com.mceternal.eternalcurrencies.item.ItemCurrencyCheque;
 import com.mceternal.eternalcurrencies.network.PacketHandler;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AddReloadListenerEvent;
@@ -47,12 +51,17 @@ public class EternalCurrencies {
 
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
     
-    public static final RegistryObject<CreativeModeTab> EXAMPLE_TAB = CREATIVE_MODE_TABS.register("example_tab", () -> CreativeModeTab.builder()
-            .withTabsBefore(CreativeModeTabs.COMBAT)
-            .build());
+    public static final RegistryObject<CreativeModeTab> EXAMPLE_TAB = CREATIVE_MODE_TABS.register("main",
+            () -> CreativeModeTab.builder()
+                    .withTabsBefore(CreativeModeTabs.COMBAT)
+                    .icon(() -> new ItemStack(EternalCurrenciesItems.CHEQUE.get()))
+                    .title(Component.translatable("mod.eternalcurrencies.name"))
+                    .build());
 
     public EternalCurrencies(FMLJavaModLoadingContext context) {
         IEventBus modEventBus = context.getModEventBus();
+
+        EternalCurrenciesItems.register(modEventBus);
 
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);
@@ -66,14 +75,12 @@ public class EternalCurrencies {
         if(FTBQ_LOADED)
             QuestsIntegration.init();
 
+        CREATIVE_MODE_TABS.register(modEventBus);
+
         DistExecutor.runWhenOn(Dist.CLIENT, EternalCurrenciesClient::new);
 
         // Register our mod's ForgeConfigSpec so that Forge can create and load the config file for us
         //context.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
-    }
-
-    private void preInit(FMLCommonSetupEvent event) {
-
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
@@ -85,7 +92,9 @@ public class EternalCurrencies {
 
     // Add the example block item to the building blocks tab
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
-
+        if(event.getTab() == EXAMPLE_TAB.get())
+            ItemCurrencyCheque.getVariantForEachCurrency().forEach(variant ->
+                    event.accept(variant, CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS));
     }
 
     public static CurrencyDataHolder getCurrencyHolder() {

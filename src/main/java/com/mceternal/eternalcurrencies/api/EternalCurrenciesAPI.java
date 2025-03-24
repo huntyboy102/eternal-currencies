@@ -4,6 +4,7 @@ import com.mceternal.eternalcurrencies.EternalCurrencies;
 import com.mceternal.eternalcurrencies.data.CurrencyData;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
@@ -11,6 +12,7 @@ import net.minecraftforge.common.util.LazyOptional;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Consumer;
 
 public class EternalCurrenciesAPI {
 
@@ -26,12 +28,22 @@ public class EternalCurrenciesAPI {
         return EternalCurrencies.getCurrencyHolder().getAllCurrencies().get(currency);
     }
 
+    public static void ifCurrencyRegistered(ResourceLocation currency, Consumer<CurrencyData> dataConsumer) {
+        if(getRegisteredCurrencies().containsKey(currency)) {
+            dataConsumer.accept(getCurrencyData(currency));
+        }
+    }
+
     public static MutableComponent getCurrencyTranslationComponent(ResourceLocation currency) {
-        return Component.translatable("currency."+ currency +".name");
+        CurrencyData data = getCurrencyData(currency);
+        return Component.translatable("currency."+ currency +".name")
+                .setStyle(data != null ? Style.EMPTY.withColor(data.textColor()) : Style.EMPTY);
     }
 
     public static MutableComponent getCurrencyTranslationComponent(ResourceLocation currency, long amount) {
-        return Component.translatable("currency."+ currency +".name.with_amount", amount);
+        CurrencyData data = getCurrencyData(currency);
+        return Component.translatable("currency."+ currency +".name.with_amount", amount)
+                .setStyle(data != null ? Style.EMPTY.withColor(data.textColor()) : Style.EMPTY);
     }
 
     /**
