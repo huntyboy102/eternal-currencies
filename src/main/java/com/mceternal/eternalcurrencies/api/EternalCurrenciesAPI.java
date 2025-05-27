@@ -74,7 +74,7 @@ public class EternalCurrenciesAPI {
      * @return Object's Balance for the Currency
      */
     public static long getBalanceFor(ICapabilityProvider provider, ResourceLocation currency) {
-        AtomicLong amount = new AtomicLong(-1L);
+        AtomicLong amount = new AtomicLong(0L);
         provider.getCapability(CurrenciesCapabilities.CURRENCY_BEARER).ifPresent(currencies -> amount.set(currencies.getCurrency(currency)));
 
         return amount.get();
@@ -98,10 +98,7 @@ public class EternalCurrenciesAPI {
      * @return If the Object's Balance could be decreased without going below 0
      */
     public static boolean takeBalanceFor(ICapabilityProvider provider, ResourceLocation currency, long amount) {
-        AtomicBoolean success = new AtomicBoolean(false);
-        provider.getCapability(CurrenciesCapabilities.CURRENCY_BEARER).ifPresent(currencies ->
-                success.set(currencies.tryTake(currency, amount)));
-        return success.get();
+        return takeBalanceWithThreshold(provider, currency, amount, 0);
     }
 
     /**

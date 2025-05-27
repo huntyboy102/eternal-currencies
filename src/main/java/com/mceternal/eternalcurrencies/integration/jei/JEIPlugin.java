@@ -15,7 +15,7 @@ import net.minecraft.resources.ResourceLocation;
 public class JEIPlugin implements IModPlugin {
     @Override
     public ResourceLocation getPluginUid() {
-        return new ResourceLocation(EternalCurrencies.MODID, "jei_plugin");
+        return EternalCurrencies.resource("jei_plugin");
     }
 
     @Override

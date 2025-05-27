@@ -42,9 +42,10 @@ public class EternalCurrencies {
     // Directly reference a slf4j logger
     public static final Logger LOGGER = LoggerFactory.getLogger(MODID);
 
-    public static final ResourceLocation CURRENCIES_CAP_NAME = new ResourceLocation(MODID, "currencies");
+    public static final ResourceLocation CURRENCIES_CAP_NAME = resource("currencies");
 
     public static CurrencyDataHolder CURRENCY_DATA_HOLDER;
+    public static final ResourceLocation CURRENCY_COINS = resource("coins");
 
     public static boolean FTBQ_LOADED = ModList.get().isLoaded("ftbquests");
 
@@ -57,6 +58,10 @@ public class EternalCurrencies {
                     .icon(() -> new ItemStack(EternalCurrenciesItems.CHEQUE.get()))
                     .title(Component.translatable("mod.eternalcurrencies.name"))
                     .build());
+
+    public static ResourceLocation resource(String path) {
+        return new ResourceLocation(MODID, path);
+    }
 
     public EternalCurrencies(FMLJavaModLoadingContext context) {
         IEventBus modEventBus = context.getModEventBus();

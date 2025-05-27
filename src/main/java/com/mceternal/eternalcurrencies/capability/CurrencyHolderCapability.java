@@ -48,6 +48,13 @@ public class CurrencyHolderCapability implements ICurrencies {
     }
 
     @Override
+    public boolean hasAtleast(Map<ResourceLocation, Long> otherCurrencies) {
+        return otherCurrencies.entrySet().stream()
+                .allMatch(entry ->
+                        balances.containsKey(entry.getKey()) && balances.get(entry.getKey()) >= entry.getValue());
+    }
+
+    @Override
     public Map<ResourceLocation, Long> getCurrencyMap() {
         return balances;
     }

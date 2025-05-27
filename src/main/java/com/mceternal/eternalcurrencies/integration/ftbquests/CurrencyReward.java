@@ -24,7 +24,7 @@ public class CurrencyReward extends Reward {
     private long amount;
 
     public CurrencyReward(long id, Quest q) {
-        this(id, q, new ResourceLocation(EternalCurrencies.MODID, "coins"), 10);
+        this(id, q, EternalCurrencies.CURRENCY_COINS, 10);
     }
 
     public CurrencyReward(long id, Quest q, ResourceLocation currencyName, long amount) {
@@ -93,7 +93,7 @@ public class CurrencyReward extends Reward {
         config.addEnum("currency", currency, value -> currency = value, NameMap.of(currency, currencies)
                 .name(value -> Component.literal(value.toString()))
                 .icon(value -> Icon.getIcon(EternalCurrenciesAPI.getCurrencyData(value).icon()))
-                .create(), new ResourceLocation(EternalCurrencies.MODID, "coins"));
+                .create(), EternalCurrencies.CURRENCY_COINS);
 
         config.addLong("amount", amount, value -> amount = value, 10L, 1L, Long.MAX_VALUE);
     }

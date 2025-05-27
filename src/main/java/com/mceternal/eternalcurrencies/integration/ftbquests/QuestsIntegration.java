@@ -6,11 +6,10 @@ import dev.ftb.mods.ftbquests.quest.reward.RewardType;
 import dev.ftb.mods.ftbquests.quest.reward.RewardTypes;
 import dev.ftb.mods.ftbquests.quest.task.TaskType;
 import dev.ftb.mods.ftbquests.quest.task.TaskTypes;
-import net.minecraft.resources.ResourceLocation;
 
 public class QuestsIntegration {
 
-    public static final Icon COINS_ICON = Icon.getIcon(new ResourceLocation(EternalCurrencies.MODID, "textures/currencies/coins.png"));
+    public static final Icon COINS_ICON = Icon.getIcon(EternalCurrencies.resource("textures/currencies/coins.png"));
 
     public static void init() {
         Rewards.init();
@@ -21,7 +20,7 @@ public class QuestsIntegration {
         public static RewardType CURRENCY;
 
         public static void init() {
-            CURRENCY = RewardTypes.register(new ResourceLocation(EternalCurrencies.MODID, "currency"), CurrencyReward::new,
+            CURRENCY = RewardTypes.register(EternalCurrencies.resource("currency"), CurrencyReward::new,
                     () -> COINS_ICON);
         }
     }
@@ -30,7 +29,7 @@ public class QuestsIntegration {
         public static TaskType CURRENCY;
 
         public static void init() {
-            CURRENCY = TaskTypes.register(new ResourceLocation(EternalCurrencies.MODID, "currency"), CurrencyTask::new,
+            CURRENCY = TaskTypes.register(EternalCurrencies.resource("currency"), CurrencyTask::new,
                     () -> COINS_ICON);
         }
     }

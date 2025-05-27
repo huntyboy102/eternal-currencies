@@ -1,7 +1,9 @@
 package com.mceternal.eternalcurrencies.api;
 
+import com.mceternal.eternalcurrencies.api.shop.ShopEntry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.common.capabilities.AutoRegisterCapability;
 
 import java.util.Map;
@@ -56,6 +58,14 @@ public interface ICurrencies {
      * @param amount Amount to add to the Balance
      */
     void add(ResourceLocation currency, long amount);
+
+    /**
+     * Test if this object contains atleast the Amount of all Currencies in the provided map.
+     * Used in {@link ShopEntry#canPurchase(ServerPlayer) ShopEntry.purchase}.
+     * @param otherCurrencies Map of Currencies to compare against.
+     * @return If this map has atleast the Amount of all Currencies in the provided map.
+     */
+    boolean hasAtleast(Map<ResourceLocation, Long> otherCurrencies);
 
     /**
      * Gets the associated Map used to store Currency

@@ -38,7 +38,7 @@ public class QuestsIntegrationClient {
 
             EditStringConfigOverlay<Long> overlay = new EditStringConfigOverlay<>(panel.getGui(), config, accepted -> {
                 if(accepted)
-                    callback.accept(new CurrencyReward(0L, quest, new ResourceLocation(EternalCurrencies.MODID, "coins"), config.getValue()));
+                    callback.accept(new CurrencyReward(0L, quest, EternalCurrencies.CURRENCY_COINS, config.getValue()));
 
                 panel.run();
             }, QuestsIntegration.Rewards.CURRENCY.getDisplayName()).atMousePosition();
@@ -46,7 +46,7 @@ public class QuestsIntegrationClient {
 
             List<ResourceLocation> currencies = EternalCurrenciesAPI.getRegisteredCurrencies().keySet().stream().toList();
 
-            EnumConfig<ResourceLocation> enumConfig = new EnumConfig<>(NameMap.of(new ResourceLocation(EternalCurrencies.MODID, "coins"), currencies)
+            EnumConfig<ResourceLocation> enumConfig = new EnumConfig<>(NameMap.of(EternalCurrencies.CURRENCY_COINS, currencies)
                     .nameKey(value -> "currency."+ value +".name")
                     .icon(value -> Icon.getIcon(EternalCurrenciesAPI.getCurrencyData(value).icon()))
                     .create());
