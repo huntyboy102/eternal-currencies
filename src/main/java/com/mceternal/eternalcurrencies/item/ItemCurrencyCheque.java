@@ -2,6 +2,7 @@ package com.mceternal.eternalcurrencies.item;
 
 import com.mceternal.eternalcurrencies.EternalCurrencies;
 import com.mceternal.eternalcurrencies.api.EternalCurrenciesAPI;
+import com.mceternal.eternalcurrencies.data.CurrencyData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.*;
 import net.minecraft.network.chat.Component;
@@ -21,6 +22,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BiConsumer;
 
 public class ItemCurrencyCheque extends Item {
@@ -35,10 +37,10 @@ public class ItemCurrencyCheque extends Item {
 
     public static List<ItemStack> getVariantForEachCurrency() {
         List<ItemStack> variants = new ArrayList<>();
-        EternalCurrenciesAPI.getRegisteredCurrencies().forEach((identifier, currenyData) -> {
+        EternalCurrenciesAPI.getRegisteredCurrencies().forEach((identifier, currencyData) -> {
             CompoundTag entry = new CompoundTag();
             entry.putString(KEY_CURRENCY_TYPE, identifier.toString());
-            entry.putLong(KEY_CURRENCY_AMOUNT, currenyData.defaultAmount());
+            entry.putLong(KEY_CURRENCY_AMOUNT, 10L);
 
             ListTag entries = new ListTag();
             entries.add(entry);
@@ -83,7 +85,7 @@ public class ItemCurrencyCheque extends Item {
 
             EternalCurrenciesAPI.getCurrencies(target).ifPresent(currencies -> {
                 ListTag currencyTagList = self.getTag().getList(KEY_CURRENCY_TAG, 10);
-                forCurrencyTag(currencyTagList, (currency, amount) -> {
+                forCurrencyTag(currencyTagList, level, (currency, amount) -> {
                     currencies.add(currency, amount);
                     player.sendSystemMessage(Component.translatable("message.eternalcurrencies.added_currency",
                             EternalCurrenciesAPI.getCurrencyTranslationComponent(currency, currencies.getCurrency(currency)), amount));
@@ -115,15 +117,32 @@ public class ItemCurrencyCheque extends Item {
                     && tag.get(KEY_CURRENCY_AMOUNT) instanceof NumericTag);
     }
 
-    public static void forCurrencyTag(ListTag currencyTagList, BiConsumer<ResourceLocation, Long> contentConsumer) {
+    public static void forCurrencyTag(ListTag currencyTagList, Level level, BiConsumer<ResourceLocation, Long> contentConsumer) {
         currencyTagList.forEach(tag -> {
             if (tag instanceof CompoundTag currencyTag && validateCurrencyTag(currencyTag)) {
                 ResourceLocation currency = new ResourceLocation(currencyTag.getString(KEY_CURRENCY_TYPE));
                 long amount = currencyTag.getLong(KEY_CURRENCY_AMOUNT);
-                if(EternalCurrenciesAPI.getRegisteredCurrencies().containsKey(currency))
+                if(EternalCurrenciesAPI.getRegisteredCurrencies(level.registryAccess()).containsKey(currency))
                     contentConsumer.accept(currency, amount);
             }
         });
+    }
+
+    public static ItemStack createStackWith(Map<ResourceLocation, Long> currencies) {
+        CompoundTag root = new CompoundTag();
+        ListTag currencyList = new ListTag();
+        currencies.forEach((currency, amount) -> {
+            CompoundTag currencyTag = new CompoundTag();
+            currencyTag.putString(KEY_CURRENCY_TYPE, currency.toString());
+            currencyTag.putLong(KEY_CURRENCY_AMOUNT, amount);
+            currencyList.add(currencyTag);
+        });
+        root.put(KEY_CURRENCY_TAG, currencyList);
+        return new ItemStack(EternalCurrenciesItems.CHEQUE.get(), 1, root);
+    }
+
+    public static ItemStack createStackWith(ResourceLocation currency, long amount) {
+        return createStackWith(Map.of(currency, amount));
     }
 
     @Override
@@ -133,7 +152,10 @@ public class ItemCurrencyCheque extends Item {
             currencyRoot.forEach(tag -> {
                 if (tag instanceof CompoundTag entryTag && validateCurrencyTag(entryTag)) {
                     ResourceLocation currency = new ResourceLocation(entryTag.getString(KEY_CURRENCY_TYPE));
-                    if(EternalCurrenciesAPI.getRegisteredCurrencies().containsKey(currency))
+                    Map<ResourceLocation, CurrencyData> currencyReg = level != null
+                            ? EternalCurrenciesAPI.getRegisteredCurrencies(level.registryAccess())
+                            : EternalCurrenciesAPI.getRegisteredCurrencies();
+                    if(currencyReg.containsKey(currency))
                         tooltipLines.add(EternalCurrenciesAPI.getCurrencyTranslationComponent(
                                 currency,
                                 entryTag.getLong(KEY_CURRENCY_AMOUNT)));

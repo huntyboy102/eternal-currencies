@@ -1,6 +1,5 @@
-package com.mceternal.eternalcurrencies.capability;
+package com.mceternal.eternalcurrencies.api.capability;
 
-import com.mceternal.eternalcurrencies.api.ICurrencies;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.LongTag;
 import net.minecraft.resources.ResourceLocation;

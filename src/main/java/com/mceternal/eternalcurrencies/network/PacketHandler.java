@@ -10,7 +10,7 @@ import net.minecraftforge.network.simple.SimpleChannel;
 
 public class PacketHandler {
     public static final SimpleChannel CHANNEL = NetworkRegistry.ChannelBuilder.named(
-            new ResourceLocation(EternalCurrencies.MODID, "main"))
+            EternalCurrencies.resource("main"))
             .serverAcceptedVersions(version -> true)
             .clientAcceptedVersions(version -> true)
             .networkProtocolVersion(() -> "1.0")

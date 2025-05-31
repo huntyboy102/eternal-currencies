@@ -1,4 +1,4 @@
-package com.mceternal.eternalcurrencies.api;
+package com.mceternal.eternalcurrencies.api.capability;
 
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;

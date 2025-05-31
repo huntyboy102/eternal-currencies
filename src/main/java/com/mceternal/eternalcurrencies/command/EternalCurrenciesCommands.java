@@ -1,6 +1,7 @@
 package com.mceternal.eternalcurrencies.command;
 
 import com.mceternal.eternalcurrencies.api.EternalCurrenciesAPI;
+import com.mceternal.eternalcurrencies.data.CurrencyData;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.LongArgumentType;
@@ -8,6 +9,7 @@ import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
+import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.commands.*;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
@@ -21,91 +23,89 @@ import java.util.function.Supplier;
 public class EternalCurrenciesCommands {
 
     private static final SuggestionProvider<CommandSourceStack> SUGGEST_CURRENCIES = (context, suggestions) ->
-            SharedSuggestionProvider.suggest(EternalCurrenciesAPI.getRegisteredCurrencies().keySet()
+            SharedSuggestionProvider.suggest(EternalCurrenciesAPI.getRegisteredCurrencies(context.getSource().getLevel().registryAccess()).keySet()
                     .stream().map(ResourceLocation::toString), suggestions);
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext buildContext) {
         //EternalCurrencies.LOGGER.info("Fired Command Registry!");
         //TODO: consider if these should be individual commands, or subcommands.
 
-        //Set Balance
-        dispatcher.register(Commands.literal("setbalance")
-                .requires(command -> command.hasPermission(2))
-                .then(executesWithCurrencyAndPlayer(
-                        (context, player) -> setBalance(
-                                ResourceLocationArgument.getId(context, "currency"),
-                                LongArgumentType.getLong(context, "amount"),
-                                player,
-                                context
-                        ))
-                ));
-
-        //Add to Balance
-        dispatcher.register(Commands.literal("addcurrency")
-                .requires(command -> command.hasPermission(2))
-                .then(executesWithCurrencyAndPlayer(
-                        (context, player) -> addCurrency(
-                            ResourceLocationArgument.getId(context, "currency"),
-                            LongArgumentType.getLong(context, "amount"),
-                            player,
-                            context
-                        ))
-                ));
-
-        //Remove from Balance
-        dispatcher.register(Commands.literal("removecurrency")
-                .requires(command -> command.hasPermission(2))
-                .then(executesWithCurrencyAndPlayer(
-                        (context, player) -> removeCurrency(
-                                ResourceLocationArgument.getId(context, "currency"),
-                                LongArgumentType.getLong(context, "amount"),
-                                player,
-                                context
-                        )
-                ))
-        );
-
-        //Get Balance
-        dispatcher.register(Commands.literal("checkbalance")
-                .then(Commands.argument("currency", ResourceLocationArgument.id())
-                        .suggests(SUGGEST_CURRENCIES)
-                        .executes(context -> getBalance(
-                                ResourceLocationArgument.getId(context, "currency"),
-                                context.getSource().getPlayer(),
-                                context
-                        ))
-                        .then(Commands.argument("player", EntityArgument.player())
-                                .requires(command -> command.hasPermission(2))
-                                .executes(context -> getBalance(
-                                        ResourceLocationArgument.getId(context, "currency"),
-                                        EntityArgument.getPlayer(context, "player"),
-                                        context
-                                ))
-                        )
-                ));
-
-        //Pay
-        dispatcher.register(Commands.literal("pay")
-                .requires(CommandSourceStack::isPlayer)
-                .then(withCurrencyAndAmount(
-                        Commands.argument("player", EntityArgument.player())
-                                .executes(context -> pay(
+        LiteralCommandNode<CommandSourceStack> ecCommand = dispatcher.register(Commands.literal("eternalcurrencies")
+                //Set Balance
+                .then(Commands.literal("setbalance")
+                        .requires(command -> command.hasPermission(2))
+                        .then(executesWithCurrencyAndPlayer(
+                                (context, player) -> setBalance(
                                         ResourceLocationArgument.getId(context, "currency"),
                                         LongArgumentType.getLong(context, "amount"),
-                                        EntityArgument.getPlayer(context, "player"),
-                                        context.getSource().getPlayer()
+                                        player,
+                                        context
                                 ))
-                ))
+                        ))
+                //Add to Balance
+                .then(Commands.literal("addcurrency")
+                        .requires(command -> command.hasPermission(2))
+                        .then(executesWithCurrencyAndPlayer(
+                                (context, player) -> addCurrency(
+                                        ResourceLocationArgument.getId(context, "currency"),
+                                        LongArgumentType.getLong(context, "amount"),
+                                        player,
+                                        context
+                                ))
+                        ))
+                //Remove from Balance
+                .then(Commands.literal("removecurrency")
+                        .requires(command -> command.hasPermission(2))
+                        .then(executesWithCurrencyAndPlayer(
+                                (context, player) -> removeCurrency(
+                                        ResourceLocationArgument.getId(context, "currency"),
+                                        LongArgumentType.getLong(context, "amount"),
+                                        player,
+                                        context
+                                )
+                        )))
+                //Get Balance
+                .then(Commands.literal("checkbalance")
+                        .then(Commands.argument("currency", ResourceLocationArgument.id())
+                                .suggests(SUGGEST_CURRENCIES)
+                                .executes(context -> getBalance(
+                                        ResourceLocationArgument.getId(context, "currency"),
+                                        context.getSource().getPlayer(),
+                                        context
+                                ))
+                                .then(Commands.argument("player", EntityArgument.player())
+                                        .requires(command -> command.hasPermission(2))
+                                        .executes(context -> getBalance(
+                                                ResourceLocationArgument.getId(context, "currency"),
+                                                EntityArgument.getPlayer(context, "player"),
+                                                context
+                                        ))
+                                )
+                        ))
+                //Pay
+                .then(Commands.literal("pay")
+                        .requires(CommandSourceStack::isPlayer)
+                        .then(withCurrencyAndAmount(
+                                Commands.argument("player", EntityArgument.player())
+                                        .executes(context -> pay(
+                                                ResourceLocationArgument.getId(context, "currency"),
+                                                LongArgumentType.getLong(context, "amount"),
+                                                EntityArgument.getPlayer(context, "player"),
+                                                context.getSource().getPlayer()
+                                        ))
+                        )))
+                //Debug - list currencies
+                .then(Commands.literal("listcurrencies")
+                        .requires(command -> command.hasPermission(2))
+                        .executes(commandContext -> {
+                            EternalCurrenciesAPI.getRegisteredCurrencies(commandContext.getSource().getLevel().registryAccess()).forEach((currency, data) ->
+                                    commandContext.getSource().sendSystemMessage(Component.literal("identifier="+ currency +" icon="+ data.icon())));
+                            return Command.SINGLE_SUCCESS;
+                        }))
         );
 
-        //Debug - list currencies
-        dispatcher.register(Commands.literal("listcurrencies")
-                .requires(command -> command.hasPermission(2))
-                .executes(commandContext -> {
-                    EternalCurrenciesAPI.getRegisteredCurrencies().forEach((location, currencyData) ->
-                            commandContext.getSource().sendSystemMessage(Component.literal("identifier="+ location +" icon="+currencyData.icon())));
-                    return Command.SINGLE_SUCCESS;
-                }));
+        //"ec" Alias
+        dispatcher.register(Commands.literal("ec").redirect(ecCommand));
     }
 
     public static <T> RequiredArgumentBuilder<CommandSourceStack, ResourceLocation> withCurrencyAndAmount(
@@ -138,7 +138,7 @@ public class EternalCurrenciesCommands {
             Supplier<ServerPlayer> player
     ) {
         ResourceLocation currency = ResourceLocationArgument.getId(context, "currency");
-        if(EternalCurrenciesAPI.getRegisteredCurrencies().containsKey(currency))
+        if(EternalCurrenciesAPI.getRegisteredCurrencies(context.getSource().getLevel().registryAccess()).containsKey(currency))
             return executor.apply(context, player.get());
 
         context.getSource().sendFailure(Component.translatable("commands.eternalcurrencies.error.unregistered_currency",
@@ -176,6 +176,13 @@ public class EternalCurrenciesCommands {
     }
 
     private static int pay(ResourceLocation currency, long amount, ServerPlayer playerTo, ServerPlayer senderPlayer) {
+        CurrencyData currencyDef = EternalCurrenciesAPI.getCurrencyData(currency);
+        if(currencyDef == null
+                ||!currencyDef.transferable()) {
+            senderPlayer.sendSystemMessage(Component.translatable("commands.eternalcurrencies.pay.untransferable_currency"));
+            return 0;
+        }
+
         if(EternalCurrenciesAPI.takeBalanceFor(senderPlayer, currency, amount)) {
             EternalCurrenciesAPI.addBalanceFor(playerTo, currency, amount);
             senderPlayer.sendSystemMessage(Component.translatable("commands.eternalcurrencies.pay.success",

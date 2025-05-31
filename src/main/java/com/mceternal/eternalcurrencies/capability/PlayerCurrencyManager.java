@@ -1,8 +1,9 @@
 package com.mceternal.eternalcurrencies.capability;
 
 import com.mceternal.eternalcurrencies.EternalCurrencies;
-import com.mceternal.eternalcurrencies.api.CurrenciesCapabilities;
-import com.mceternal.eternalcurrencies.api.ICurrencies;
+import com.mceternal.eternalcurrencies.api.capability.CurrenciesCapabilities;
+import com.mceternal.eternalcurrencies.api.capability.CurrencyHolderCapability;
+import com.mceternal.eternalcurrencies.api.capability.ICurrencies;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;

@@ -1,31 +1,76 @@
 package com.mceternal.eternalcurrencies.api;
 
-import com.mceternal.eternalcurrencies.EternalCurrencies;
+import com.mceternal.eternalcurrencies.api.capability.CurrenciesCapabilities;
+import com.mceternal.eternalcurrencies.api.capability.ICurrencies;
 import com.mceternal.eternalcurrencies.data.CurrencyData;
+import com.mceternal.eternalcurrencies.data.EternalCurrenciesRegistries;
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class EternalCurrenciesAPI {
 
     /**
-     * Gets all registered Currencies.
+     * Gets all registered Currencies. May return an empty Map if the Currency Registry cannot be accessed.
+     * @return Map of all currencies in the Currency Registry.
+     */
+    public static Map<ResourceLocation, CurrencyData> getRegisteredCurrencies(RegistryAccess registryAccess) {
+        Optional<Registry<CurrencyData>> currencyReg =  registryAccess.registry(EternalCurrenciesRegistries.KEY_CURRENCIES);
+        return currencyReg.map(currencyData -> currencyData
+                .asLookup()
+                .listElements()
+                .collect(Collectors.toMap(
+                        entry -> entry.key().location(),
+                        Holder.Reference::get
+                ))).orElse(Map.of());
+    }
+
+    /**
+     * Gets all registered Currencies using the static Level variable. May return an empty map if the Currency Registry cannot be accessed.
      * @return Map of all currencies in the Currency Registry.
      */
     public static Map<ResourceLocation, CurrencyData> getRegisteredCurrencies() {
-        return EternalCurrencies.getCurrencyHolder().getAllCurrencies();
+        Minecraft minecraft = Minecraft.getInstance();
+        return minecraft.level != null
+                ? getRegisteredCurrencies(minecraft.level.registryAccess())
+                : Map.of();
     }
 
     public static CurrencyData getCurrencyData(ResourceLocation currency) {
-        return EternalCurrencies.getCurrencyHolder().getAllCurrencies().get(currency);
+        Minecraft minecraft = Minecraft.getInstance();
+        return minecraft.level != null
+                ? getCurrencyData(currency, minecraft.level.registryAccess())
+                : null;
+    }
+
+    public static CurrencyData getCurrencyData(ResourceLocation currency, RegistryAccess registryAccess) {
+        return registryAccess.registry(EternalCurrenciesRegistries.KEY_CURRENCIES)
+                .orElseThrow(() -> new RuntimeException("Currency registry could not be fetched while attempting to fetch CurrencyData for '"+ currency.toString() +"'."))
+                .get(currency);
+    }
+
+    public static Level fetchSidedStaticLevel() {
+        return switch (FMLEnvironment.dist) {
+            case CLIENT -> Minecraft.getInstance().level;
+            //case DEDICATED_SERVER -> MinecraftServer.;
+            default -> throw new RuntimeException("Sided Level could not be fetched. This should not be possible!");
+        };
     }
 
     public static void ifCurrencyRegistered(ResourceLocation currency, Consumer<CurrencyData> dataConsumer) {

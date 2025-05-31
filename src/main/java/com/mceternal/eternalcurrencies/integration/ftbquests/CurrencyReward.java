@@ -52,7 +52,7 @@ public class CurrencyReward extends Reward {
         if(notify)
             new DisplayRewardToastMessage(this.id,
                     EternalCurrenciesAPI.getCurrencyTranslationComponent(currency, amount),
-                    Icon.getIcon(EternalCurrenciesAPI.getCurrencyData(currency).icon())
+                    Icon.getIcon(EternalCurrenciesAPI.getCurrencyData(currency, serverPlayer.level().registryAccess()).icon())
             ).sendTo(serverPlayer);
     }
 

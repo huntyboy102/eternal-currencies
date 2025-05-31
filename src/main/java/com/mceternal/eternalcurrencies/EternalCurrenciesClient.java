@@ -1,14 +1,17 @@
 package com.mceternal.eternalcurrencies;
 
-import com.mceternal.eternalcurrencies.integration.ftbquests.QuestsIntegrationClient;
-
-import static com.mceternal.eternalcurrencies.EternalCurrencies.FTBQ_LOADED;
+import com.mceternal.eternalcurrencies.gui.CurrencyShopScreen;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.client.Minecraft;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.TickEvent;
+import org.lwjgl.glfw.GLFW;
 
 public class EternalCurrenciesClient implements Runnable {
 
     @Override
     public void run() {
-        if(FTBQ_LOADED) {
+        if(EternalCurrencies.FTBQ_LOADED) {
             //QuestsIntegrationClient.setupRewardGuiProviders();
             //QuestsIntegrationClient.setupTaskGuiProviders();
         }

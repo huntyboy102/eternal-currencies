@@ -1,10 +1,9 @@
 package com.mceternal.eternalcurrencies;
 
 import com.mceternal.eternalcurrencies.command.EternalCurrenciesCommands;
-import com.mceternal.eternalcurrencies.data.CurrencyDataHolder;
-import com.mceternal.eternalcurrencies.data.EternalCurrenciesRegistries;
-import com.mceternal.eternalcurrencies.data.CurrencyData;
-import com.mceternal.eternalcurrencies.data.CurrencyDataManager;
+import com.mceternal.eternalcurrencies.data.*;
+import com.mceternal.eternalcurrencies.data.shop.ECShopEntryTypes;
+import com.mceternal.eternalcurrencies.data.shop.ShopHolder;
 import com.mceternal.eternalcurrencies.integration.ftbquests.QuestsIntegration;
 import com.mceternal.eternalcurrencies.item.EternalCurrenciesItems;
 import com.mceternal.eternalcurrencies.item.ItemCurrencyCheque;
@@ -16,8 +15,8 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -44,7 +43,6 @@ public class EternalCurrencies {
 
     public static final ResourceLocation CURRENCIES_CAP_NAME = resource("currencies");
 
-    public static CurrencyDataHolder CURRENCY_DATA_HOLDER;
     public static final ResourceLocation CURRENCY_COINS = resource("coins");
 
     public static boolean FTBQ_LOADED = ModList.get().isLoaded("ftbquests");
@@ -67,15 +65,20 @@ public class EternalCurrencies {
         IEventBus modEventBus = context.getModEventBus();
 
         EternalCurrenciesItems.register(modEventBus);
+        ECShopEntryTypes.register(modEventBus);
 
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);
+
+        modEventBus.addListener(EternalCurrenciesRegistries::addRegistries);
 
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
 
         // Register the item to a creative tab
         modEventBus.addListener(this::addCreative);
+
+        modEventBus.addListener(EternalCurrenciesRegistries::registerCurrencies);
 
         if(FTBQ_LOADED)
             QuestsIntegration.init();
@@ -102,12 +105,6 @@ public class EternalCurrencies {
                     event.accept(variant, CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS));
     }
 
-    public static CurrencyDataHolder getCurrencyHolder() {
-        if(CURRENCY_DATA_HOLDER == null)
-            throw new IllegalStateException("CurrencyDataHolder hasn't been instantiated yet. Wait until Resources are loaded!");
-        return CURRENCY_DATA_HOLDER;
-    }
-
     // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
     @Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
     public static class ClientModEvents {
@@ -122,17 +119,9 @@ public class EternalCurrencies {
         @SubscribeEvent
         public static void registerCommands(RegisterCommandsEvent event) {
             EternalCurrenciesCommands.register(event.getDispatcher(), event.getBuildContext());
-        }
 
-        //@SubscribeEvent
-        public static void registerCurrencies(DataPackRegistryEvent.NewRegistry event) {
-            event.dataPackRegistry(EternalCurrenciesRegistries.CURRENCY_DATA, CurrencyData.CODEC);
-        }
-
-        @SubscribeEvent
-        public static void onResourceReload(AddReloadListenerEvent event) {
-            CURRENCY_DATA_HOLDER = new CurrencyDataManager(event.getRegistryAccess());
-            event.addListener((CurrencyDataManager) CURRENCY_DATA_HOLDER);
+            //EternalCurrenciesRegistries.SHOP_ENTRY_TYPES.get().forEach(codec ->
+            //        LOGGER.info("ShopEntry Type Registry entry: {}", codec.toString()));
         }
     }
 }

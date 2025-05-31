@@ -1,4 +1,4 @@
-package com.mceternal.eternalcurrencies.api;
+package com.mceternal.eternalcurrencies.api.capability;
 
 import com.mceternal.eternalcurrencies.api.shop.ShopEntry;
 import net.minecraft.nbt.CompoundTag;
