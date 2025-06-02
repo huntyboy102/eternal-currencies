@@ -2,8 +2,8 @@ package com.mceternal.eternalcurrencies;
 
 import com.mceternal.eternalcurrencies.command.EternalCurrenciesCommands;
 import com.mceternal.eternalcurrencies.data.*;
-import com.mceternal.eternalcurrencies.data.shop.ECShopEntryTypes;
-import com.mceternal.eternalcurrencies.data.shop.ShopHolder;
+import com.mceternal.eternalcurrencies.data.shop.entry.ECShopEntryTypes;
+import com.mceternal.eternalcurrencies.data.shop.requirement.ECPurchaseRequirementTypes;
 import com.mceternal.eternalcurrencies.integration.ftbquests.QuestsIntegration;
 import com.mceternal.eternalcurrencies.item.EternalCurrenciesItems;
 import com.mceternal.eternalcurrencies.item.ItemCurrencyCheque;
@@ -27,9 +27,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.registries.DataPackRegistryEvent;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.RegistryObject;
+import net.minecraftforge.registries.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,20 +63,22 @@ public class EternalCurrencies {
         IEventBus modEventBus = context.getModEventBus();
 
         EternalCurrenciesItems.register(modEventBus);
-        ECShopEntryTypes.register(modEventBus);
 
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);
-
-        modEventBus.addListener(EternalCurrenciesRegistries::addRegistries);
-
-        // Register ourselves for server and other game events we are interested in
-        MinecraftForge.EVENT_BUS.register(this);
 
         // Register the item to a creative tab
         modEventBus.addListener(this::addCreative);
 
         modEventBus.addListener(EternalCurrenciesRegistries::registerCurrencies);
+
+        modEventBus.addListener(EternalCurrenciesRegistries::addRegistries);
+
+        ECShopEntryTypes.register(modEventBus);
+        ECPurchaseRequirementTypes.register(modEventBus);
+
+        // Register ourselves for server and other game events we are interested in
+        MinecraftForge.EVENT_BUS.register(this);
 
         if(FTBQ_LOADED)
             QuestsIntegration.init();
@@ -111,6 +111,11 @@ public class EternalCurrencies {
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event) {
 
+        }
+
+        @SubscribeEvent
+        public static void onRegisterKeybinds(RegisterKeyMappingsEvent event) {
+            event.register(EternalCurrenciesClient.KEY_OPEN_SHOP);
         }
     }
 

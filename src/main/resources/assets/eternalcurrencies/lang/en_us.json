@@ -6,6 +6,7 @@
   "commands.eternalcurrencies.pay.success": "Paid %2$s %1$s to %3$s",
   "commands.eternalcurrencies.pay.insufficient_balance": "Cannot pay %2$s %1$s to %3$s, insufficient Balance. (%4$s)",
   "commands.eternalcurrencies.pay.receive": "Received %2$s %1$s from %3$s",
+  "commands.eternalcurrencies.pay.untransferable_currency": "%1$s cannot be transferred.",
   "commands.eternalcurrencies.error.unregistered_currency": "Currency \"%s\" does not exist.",
 
   "message.eternalcurrencies.added_currency": "+%2$s (%1$s)",
@@ -16,6 +17,12 @@
   "item.eternalcurrencies.currency_item": "Currency Item",
 
   "mod.eternalcurrencies.name": "Eternal Currencies",
+
+  "screen.eternalcurrencies.shop.name": "Shop",
+
+  "keys.eternalcurrencies.category": "Eternal Currencies",
+  "key.eternalcurrencies.open_shop": "Open Shop",
+
 
   "ftbquests.reward.eternalcurrencies.currency": "Currency Reward",
   "ftbquests.reward.eternalcurrencies.currency.currency": "Currency",

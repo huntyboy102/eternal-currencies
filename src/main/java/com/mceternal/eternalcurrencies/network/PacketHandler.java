@@ -1,7 +1,6 @@
 package com.mceternal.eternalcurrencies.network;
 
 import com.mceternal.eternalcurrencies.EternalCurrencies;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkRegistry;
@@ -17,11 +16,10 @@ public class PacketHandler {
             .simpleChannel();
 
     public static void register() {
-        CHANNEL.messageBuilder(S2CSyncCurrencyRegistryPacket.class, 0, NetworkDirection.LOGIN_TO_CLIENT)
-                .encoder(S2CSyncCurrencyRegistryPacket::encode)
-                .decoder(S2CSyncCurrencyRegistryPacket::new)
-                .consumerMainThread(S2CSyncCurrencyRegistryPacket::handle)
-                .markAsLoginPacket()
+        CHANNEL.messageBuilder(C2SBuyShopEntryPacket.class, 1, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(C2SBuyShopEntryPacket::encode)
+                .decoder(C2SBuyShopEntryPacket::new)
+                .consumerMainThread(C2SBuyShopEntryPacket::handle)
                 .noResponse()
                 .add();
     }
