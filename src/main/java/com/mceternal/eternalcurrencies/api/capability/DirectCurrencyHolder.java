@@ -1,13 +1,15 @@
 package com.mceternal.eternalcurrencies.api.capability;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.LongTag;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class CurrencyHolderCapability implements ICurrencies {
+/**
+ * This implementation of ICurrencies will store balance directly onto the Object, as a {@link Map Map{ResourceLocation, Long}} under the "eternalcurrencies:currencies" Capability.
+ */
+public class DirectCurrencyHolder implements ICurrencies {
 
     Map<ResourceLocation, Long> balances = new HashMap<>();
 
@@ -19,11 +21,6 @@ public class CurrencyHolderCapability implements ICurrencies {
     @Override
     public void setBalance(ResourceLocation currency, long amount) {
         balances.put(currency, amount);
-    }
-
-    @Override
-    public boolean tryTake(ResourceLocation currency, long amount) {
-        return tryTake(currency, amount, 0);
     }
 
     @Override
@@ -61,7 +58,7 @@ public class CurrencyHolderCapability implements ICurrencies {
     @Override
     public CompoundTag serializeNBT() {
         CompoundTag tag = new CompoundTag();
-        balances.forEach((id, amount) -> tag.put(id.toString(), LongTag.valueOf(amount)));
+        balances.forEach((id, amount) -> tag.putLong(id.toString(), amount));
 
         return tag;
     }

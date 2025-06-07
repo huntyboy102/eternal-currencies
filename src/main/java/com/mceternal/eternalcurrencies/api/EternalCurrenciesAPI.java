@@ -1,6 +1,5 @@
 package com.mceternal.eternalcurrencies.api;
 
-import com.mceternal.eternalcurrencies.api.capability.CurrenciesCapabilities;
 import com.mceternal.eternalcurrencies.api.capability.ICurrencies;
 import com.mceternal.eternalcurrencies.data.CurrencyData;
 import com.mceternal.eternalcurrencies.data.EternalCurrenciesRegistries;
@@ -98,7 +97,7 @@ public class EternalCurrenciesAPI {
      * @return Object's Currency Capability, use {@link LazyOptional#ifPresent} to safely execute.
      */
     public static LazyOptional<ICurrencies> getCurrencies(ICapabilityProvider provider) {
-        return provider.getCapability(CurrenciesCapabilities.CURRENCY_BEARER);
+        return provider.getCapability(ICurrencies.CAPABILITY);
     }
 
     /**
@@ -108,7 +107,7 @@ public class EternalCurrenciesAPI {
      * @param amount target Amount to set the Currency to
      */
     public static void setBalanceFor(ICapabilityProvider provider, ResourceLocation currency, long amount) {
-        provider.getCapability(CurrenciesCapabilities.CURRENCY_BEARER).ifPresent(currencies ->
+        provider.getCapability(ICurrencies.CAPABILITY).ifPresent(currencies ->
                 currencies.setBalance(currency, amount));
     }
 
@@ -120,7 +119,7 @@ public class EternalCurrenciesAPI {
      */
     public static long getBalanceFor(ICapabilityProvider provider, ResourceLocation currency) {
         AtomicLong amount = new AtomicLong(0L);
-        provider.getCapability(CurrenciesCapabilities.CURRENCY_BEARER).ifPresent(currencies -> amount.set(currencies.getCurrency(currency)));
+        provider.getCapability(ICurrencies.CAPABILITY).ifPresent(currencies -> amount.set(currencies.getCurrency(currency)));
 
         return amount.get();
     }
@@ -132,7 +131,7 @@ public class EternalCurrenciesAPI {
      * @param amount Amount to add to the Object's Balance
      */
     public static void addBalanceFor(ICapabilityProvider provider, ResourceLocation currency, long amount) {
-        provider.getCapability(CurrenciesCapabilities.CURRENCY_BEARER).ifPresent(currencies -> currencies.add(currency, amount));
+        provider.getCapability(ICurrencies.CAPABILITY).ifPresent(currencies -> currencies.add(currency, amount));
     }
 
     /**
@@ -157,7 +156,7 @@ public class EternalCurrenciesAPI {
      */
     public static boolean takeBalanceWithThreshold(ICapabilityProvider provider, ResourceLocation currency, long amount, long threshold) {
         AtomicBoolean success = new AtomicBoolean(false);
-        provider.getCapability(CurrenciesCapabilities.CURRENCY_BEARER).ifPresent(currencies ->
+        provider.getCapability(ICurrencies.CAPABILITY).ifPresent(currencies ->
                 success.set(currencies.tryTake(currency, amount, threshold)));
         return success.get();
     }
@@ -169,7 +168,7 @@ public class EternalCurrenciesAPI {
      * @param amount Amount to remove from the Object's Balance
      */
     public static void takeAnywayFor(ICapabilityProvider provider, ResourceLocation currency, long amount) {
-        provider.getCapability(CurrenciesCapabilities.CURRENCY_BEARER).ifPresent(currencies ->
+        provider.getCapability(ICurrencies.CAPABILITY).ifPresent(currencies ->
                 currencies.take(currency, amount));
     }
 }

@@ -14,6 +14,9 @@ public class EternalCurrenciesItems {
     public static final RegistryObject<Item> CHEQUE = ITEMS.register("currency_item",
             () -> new ItemCurrencyCheque(new Item.Properties()));
 
+    public static final RegistryObject<Item> DEBIT_CARD = ITEMS.register("debit_card",
+            () -> new ItemDebitCard(new Item.Properties()));
+
 
     public static void register(IEventBus bus) {
         ITEMS.register(bus);

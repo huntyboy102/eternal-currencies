@@ -9,7 +9,7 @@ import net.minecraft.util.ExtraCodecs;
 public abstract class ShopRequirement<T> {
 
     public static final Codec<ShopRequirement> DISPATCH_CODEC =
-            ExtraCodecs.lazyInitializedCodec(() -> EternalCurrenciesRegistries.PURCHASE_REQUIREMENT_TYPES.get().getCodec().dispatch(ShopRequirement::codec, MapCodec::codec));
+            ExtraCodecs.lazyInitializedCodec(() -> EternalCurrenciesRegistries.SHOP_REQUIREMENT_TYPES.get().getCodec().dispatch(ShopRequirement::codec, MapCodec::codec));
 
     public final T target;
 

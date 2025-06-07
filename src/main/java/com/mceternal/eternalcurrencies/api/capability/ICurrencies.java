@@ -5,11 +5,16 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.common.capabilities.AutoRegisterCapability;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.common.capabilities.CapabilityToken;
 
 import java.util.Map;
 
 @AutoRegisterCapability
 public interface ICurrencies {
+
+    Capability<ICurrencies> CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
 
     /**
      * Get the Balance for the specified Currency
@@ -32,7 +37,9 @@ public interface ICurrencies {
      * @param amount Amount to take from the Balance
      * @return If the Balance can be reduced by this much without going below 0
      */
-    boolean tryTake(ResourceLocation currency, long amount);
+    default boolean tryTake(ResourceLocation currency, long amount) {
+        return tryTake(currency, amount, 0);
+    }
 
     /**
      * Attempts to take the specified Amount from the Balance for the specified Currency, without going below the Threshold.

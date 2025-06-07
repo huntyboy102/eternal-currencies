@@ -1,6 +1,5 @@
 package com.mceternal.eternalcurrencies.item;
 
-import com.mceternal.eternalcurrencies.EternalCurrencies;
 import com.mceternal.eternalcurrencies.api.EternalCurrenciesAPI;
 import com.mceternal.eternalcurrencies.data.CurrencyData;
 import net.minecraft.core.BlockPos;
@@ -46,7 +45,7 @@ public class ItemCurrencyCheque extends Item {
             entries.add(entry);
             CompoundTag root = new CompoundTag();
             root.put(KEY_CURRENCY_TAG, entries);
-            EternalCurrencies.LOGGER.info(root.toString());
+            //EternalCurrencies.LOGGER.info(root.toString());
 
             ItemStack variant = new ItemStack(EternalCurrenciesItems.CHEQUE.get());
             variant.setTag(root);

@@ -3,7 +3,7 @@ package com.mceternal.eternalcurrencies;
 import com.mceternal.eternalcurrencies.command.EternalCurrenciesCommands;
 import com.mceternal.eternalcurrencies.data.*;
 import com.mceternal.eternalcurrencies.data.shop.entry.ECShopEntryTypes;
-import com.mceternal.eternalcurrencies.data.shop.requirement.ECPurchaseRequirementTypes;
+import com.mceternal.eternalcurrencies.data.shop.requirement.ECShopRequirementTypes;
 import com.mceternal.eternalcurrencies.integration.ftbquests.QuestsIntegration;
 import com.mceternal.eternalcurrencies.item.EternalCurrenciesItems;
 import com.mceternal.eternalcurrencies.item.ItemCurrencyCheque;
@@ -46,9 +46,9 @@ public class EternalCurrencies {
     public static boolean FTBQ_LOADED = ModList.get().isLoaded("ftbquests");
 
 
-    public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
+    private static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
     
-    public static final RegistryObject<CreativeModeTab> EXAMPLE_TAB = CREATIVE_MODE_TABS.register("main",
+    public static final RegistryObject<CreativeModeTab> EC_CREATIVE_TAB = CREATIVE_MODE_TABS.register("main",
             () -> CreativeModeTab.builder()
                     .withTabsBefore(CreativeModeTabs.COMBAT)
                     .icon(() -> new ItemStack(EternalCurrenciesItems.CHEQUE.get()))
@@ -75,7 +75,7 @@ public class EternalCurrencies {
         modEventBus.addListener(EternalCurrenciesRegistries::addRegistries);
 
         ECShopEntryTypes.register(modEventBus);
-        ECPurchaseRequirementTypes.register(modEventBus);
+        ECShopRequirementTypes.register(modEventBus);
 
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
@@ -100,9 +100,11 @@ public class EternalCurrencies {
 
     // Add the example block item to the building blocks tab
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
-        if(event.getTab() == EXAMPLE_TAB.get())
+        if(event.getTab() == EC_CREATIVE_TAB.get()) {
             ItemCurrencyCheque.getVariantForEachCurrency().forEach(variant ->
                     event.accept(variant, CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS));
+            event.accept(EternalCurrenciesItems.DEBIT_CARD);
+        }
     }
 
     // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent

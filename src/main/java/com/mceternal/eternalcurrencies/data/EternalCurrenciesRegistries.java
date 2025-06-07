@@ -23,7 +23,7 @@ public class EternalCurrenciesRegistries {
             ResourceKey.createRegistryKey(EternalCurrencies.resource("shop_entry_types"));
 
     public static final ResourceKey<Registry<MapCodec<? extends ShopRequirement>>> SHOP_REQUIREMENT =
-            ResourceKey.createRegistryKey(EternalCurrencies.resource("purchase_requirement_types"));
+            ResourceKey.createRegistryKey(EternalCurrencies.resource("shop_requirement_types"));
 
 
     public static Supplier<IForgeRegistry<CurrencyData>> CURRENCIES = () -> RegistryManager.ACTIVE.getRegistry(KEY_CURRENCIES);
@@ -32,13 +32,13 @@ public class EternalCurrenciesRegistries {
 
     public static Supplier<IForgeRegistry<MapCodec<? extends ShopEntry>>> SHOP_ENTRY_TYPES = null;
 
-    public static Supplier<IForgeRegistry<MapCodec<? extends ShopRequirement>>> PURCHASE_REQUIREMENT_TYPES = null;
+    public static Supplier<IForgeRegistry<MapCodec<? extends ShopRequirement>>> SHOP_REQUIREMENT_TYPES = null;
 
 
     public static void addRegistries(NewRegistryEvent event) {
         EternalCurrencies.LOGGER.info("created Shop Entry Type registry!");
         SHOP_ENTRY_TYPES = event.create(RegistryBuilder.of(KEY_SHOP_ENTRY_TYPES.location()));
-        PURCHASE_REQUIREMENT_TYPES = event.create(RegistryBuilder.of(SHOP_REQUIREMENT.location()));
+        SHOP_REQUIREMENT_TYPES = event.create(RegistryBuilder.of(SHOP_REQUIREMENT.location()));
     }
 
     public static void registerCurrencies(DataPackRegistryEvent.NewRegistry event) {

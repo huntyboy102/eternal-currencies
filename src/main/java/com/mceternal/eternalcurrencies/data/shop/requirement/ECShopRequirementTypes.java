@@ -8,7 +8,7 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 
-public class ECPurchaseRequirementTypes {
+public class ECShopRequirementTypes {
 
     public static final DeferredRegister<MapCodec<? extends ShopRequirement>> SHOP_REQUIREMENT =
             DeferredRegister.create(EternalCurrenciesRegistries.SHOP_REQUIREMENT, EternalCurrencies.MODID);

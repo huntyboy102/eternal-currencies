@@ -1,9 +1,8 @@
 package com.mceternal.eternalcurrencies.capability;
 
 import com.mceternal.eternalcurrencies.EternalCurrencies;
-import com.mceternal.eternalcurrencies.api.capability.CurrenciesCapabilities;
-import com.mceternal.eternalcurrencies.api.capability.CurrencyHolderCapability;
 import com.mceternal.eternalcurrencies.api.capability.ICurrencies;
+import com.mceternal.eternalcurrencies.api.capability.ReferenceCurrencyHolder;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
@@ -24,11 +23,11 @@ public class PlayerCurrencyManager {
 
     @SubscribeEvent
     public static void attachPlayerCapability(AttachCapabilitiesEvent<Entity> event) {
-        if(event.getObject() instanceof Player) {
+        if(event.getObject() instanceof Player player) {
 
-            ICurrencies playerCurrenciesCap = new CurrencyHolderCapability();
+            ICurrencies playerCurrenciesCap = new ReferenceCurrencyHolder(player.getUUID(), () -> player.level().getServer());
             LazyOptional<ICurrencies> opt = LazyOptional.of(() -> playerCurrenciesCap);
-            Capability<ICurrencies> capability = CurrenciesCapabilities.CURRENCY_BEARER;
+            Capability<ICurrencies> capability = ICurrencies.CAPABILITY;
 
             ICapabilityProvider provider = new ICapabilitySerializable<CompoundTag>() {
                 @Override
@@ -62,8 +61,8 @@ public class PlayerCurrencyManager {
             Player deadPlayer = event.getOriginal();
             deadPlayer.reviveCaps();
 
-            event.getEntity().getCapability(CurrenciesCapabilities.CURRENCY_BEARER).ifPresent(cap ->
-                    deadPlayer.getCapability(CurrenciesCapabilities.CURRENCY_BEARER).ifPresent(cap::copy));
+            event.getEntity().getCapability(ICurrencies.CAPABILITY).ifPresent(cap ->
+                    deadPlayer.getCapability(ICurrencies.CAPABILITY).ifPresent(cap::copy));
 
             deadPlayer.invalidateCaps();
         }
