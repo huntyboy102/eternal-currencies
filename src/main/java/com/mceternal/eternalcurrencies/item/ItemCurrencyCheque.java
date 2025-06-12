@@ -86,8 +86,8 @@ public class ItemCurrencyCheque extends Item {
                 ListTag currencyTagList = self.getTag().getList(KEY_CURRENCY_TAG, 10);
                 forCurrencyTag(currencyTagList, level, (currency, amount) -> {
                     currencies.add(currency, amount);
-                    player.sendSystemMessage(Component.translatable("message.eternalcurrencies.added_currency",
-                            EternalCurrenciesAPI.getCurrencyTranslationComponent(currency, currencies.getCurrency(currency)), amount));
+                    player.displayClientMessage(Component.translatable("message.eternalcurrencies.added_currency",
+                            EternalCurrenciesAPI.getCurrencyTranslationComponent(currency, currencies.getCurrency(currency)), amount), true);
                 });
             });
             if(!player.getAbilities().instabuild)

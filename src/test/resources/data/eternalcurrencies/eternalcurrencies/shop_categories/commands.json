@@ -1,0 +1,23 @@
+{
+  "icon": "minecraft:textures/blocks/barrier.png",
+  "entries": [
+    {
+      "type": "eternalcurrencies:command",
+      "id": "give_command_iron",
+      "costs": {
+        "eternalcurrencies:eternabux": 20
+      },
+      "command": "give @p minecraft:iron_ingot",
+      "requirements": [
+        {
+          "type": "eternalcurrencies:advancement",
+          "advancement": "minecraft:adventure/bullseye"
+        },
+        {
+          "type": "eternalcurrencies:ftb_quest",
+          "quest": "1fb3e8aebac2f41a"
+        }
+      ]
+    }
+  ]
+}

@@ -222,7 +222,7 @@ public class EternalCurrenciesCommands {
     }
 
     private static int pay(ResourceLocation currency, long amount, ServerPlayer playerTo, ServerPlayer senderPlayer) {
-        CurrencyData currencyDef = EternalCurrenciesAPI.getCurrencyData(currency);
+        CurrencyData currencyDef = EternalCurrenciesAPI.getCurrencyData(currency, senderPlayer.level().registryAccess());
         if(currencyDef == null
                 ||!currencyDef.transferable()) {
             senderPlayer.sendSystemMessage(Component.translatable("commands.eternalcurrencies.pay.untransferable_currency"));

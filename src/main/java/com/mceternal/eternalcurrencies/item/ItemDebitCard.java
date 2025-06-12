@@ -17,6 +17,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.UUID;
 
+//TODO - needs an actual texture eventually, if this item sticks around instead of being converted to a command.
 public class ItemDebitCard extends Item {
 
     public static final String KEY_ACCOUNT_ID = "account_uuid";
@@ -37,6 +38,7 @@ public class ItemDebitCard extends Item {
         });
     }
 
+    //TODO - should it move all your currencies to the new account if your UUID matches your current holder? (ie: is your autoassigned account)
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
@@ -53,10 +55,10 @@ public class ItemDebitCard extends Item {
                 //        accountID, referenceHolder.getReference(), referenceHolder.getReference().equals(accountID));
                 if(!referenceHolder.getReference().equals(accountID)) {
                     connectUser(player, accountID);
-                    player.sendSystemMessage(Component.translatable("item.eternalcurrencies.debit_card.connected_you_to_account", accountID));
+                    player.displayClientMessage(Component.translatable("item.eternalcurrencies.debit_card.connected_you_to_account", accountID), true);
                     return InteractionResultHolder.success(stack);
                 } else {
-                    player.sendSystemMessage(Component.translatable("item.eternalcurrencies.debit_card.already_connected_to_this_account", accountID));
+                    player.displayClientMessage(Component.translatable("item.eternalcurrencies.debit_card.already_connected_to_this_account", accountID), true);
                     return InteractionResultHolder.pass(stack);
                 }
             }
@@ -66,7 +68,7 @@ public class ItemDebitCard extends Item {
                     && currencies.resolve().get() instanceof ReferenceCurrencyHolder referenceHolder) {
                 UUID accountID = referenceHolder.getReference();
                 bindCard(stack, accountID);
-                player.sendSystemMessage(Component.translatable("item.eternalcurrencies.debit_card.connected_card_to_account", accountID));
+                player.displayClientMessage(Component.translatable("item.eternalcurrencies.debit_card.connected_card_to_account", accountID), true);
                 return InteractionResultHolder.success(stack);
             }
         }
@@ -77,7 +79,9 @@ public class ItemDebitCard extends Item {
     public void appendHoverText(ItemStack stack, @Nullable Level pLevel, List<Component> tooltipLines, TooltipFlag pIsAdvanced) {
         if(stack.hasTag() && stack.getTag().contains(KEY_ACCOUNT_ID)) {
             UUID accountID = stack.getTag().getUUID(KEY_ACCOUNT_ID);
-            tooltipLines.add(Component.translatable("item.eternalcurrencies.debit_card.tooltip", accountID.toString()));
+            tooltipLines.add(Component.translatable("item.eternalcurrencies.debit_card.tooltip.linked", accountID.toString()));
+        } else {
+            tooltipLines.add(Component.translatable("item.eternalcurrencies.debit_card.tooltip.unlinked"));
         }
     }
 }

@@ -22,7 +22,8 @@
 
   "item.eternalcurrencies.currency_item": "Currency Item",
   "item.eternalcurrencies.debit_card": "Debit Card",
-  "item.eternalcurrencies.debit_card.tooltip": "Account: %1$s",
+  "item.eternalcurrencies.debit_card.tooltip.linked": "Linked to Account: %1$s",
+  "item.eternalcurrencies.debit_card.tooltip.unlinked": "Unlinked. Use to bind it to your current Account!",
   "item.eternalcurrencies.debit_card.connected_you_to_account": "Connected you to account %1$s.",
   "item.eternalcurrencies.debit_card.already_connected_to_this_account": "You're already connected to this account!",
   "item.eternalcurrencies.debit_card.connected_card_to_account": "Bound card to account %1$s",
@@ -41,8 +42,5 @@
 
   "ftbquests.task.eternalcurrencies.currency": "Currency",
   "ftbquests.task.eternalcurrencies.currency.currency": "Currency",
-  "ftbquests.task.eternalcurrencies.currency.amount": "Currency Amount",
-
-  "currency.eternalcurrencies:eternabux.name": "Eternabux",
-  "currency.eternalcurrencies:eternabux.name.with_amount": "%s Eternabux"
+  "ftbquests.task.eternalcurrencies.currency.amount": "Currency Amount"
 }

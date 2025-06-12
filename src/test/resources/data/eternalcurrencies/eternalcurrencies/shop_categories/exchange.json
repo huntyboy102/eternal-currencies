@@ -1,0 +1,24 @@
+{
+  "icon": "eternalcurrencies:textures/currencies/coins.png",
+  "entries": [
+    {
+      "type": "eternalcurrencies:item",
+      "id": "coins_to_eternabux",
+      "costs": {
+        "eternalcurrencies:coins": 10
+      },
+      "item": {
+        "id": "eternalcurrencies:currency_item",
+        "Count": 1,
+        "tag": {
+          "currencies": [
+            {
+              "currency": "eternalcurrencies:eternabux",
+              "amount": 20
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

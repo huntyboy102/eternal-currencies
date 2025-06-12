@@ -16,8 +16,12 @@ public class ECShopRequirementTypes {
     public static final RegistryObject<MapCodec<? extends ShopRequirement>> ADVANCEMENT =
             SHOP_REQUIREMENT.register("advancement", () -> AdvancementRequirement.CODEC);
 
+    public static final RegistryObject<MapCodec<? extends ShopRequirement>> FTB_QUEST = EternalCurrencies.FTBQ_LOADED
+            ? SHOP_REQUIREMENT.register("ftb_quest", () -> FTBQuestRequirement.CODEC)
+            : null;
+
     /* TODO:
-        FTBQuestRequirement
+        FTBQuestRequirement - probably works idk, shop doesn't really work atm
      */
 
 

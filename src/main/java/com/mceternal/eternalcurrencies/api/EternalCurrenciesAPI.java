@@ -45,16 +45,16 @@ public class EternalCurrenciesAPI {
      * @return Map of all currencies in the Currency Registry.
      */
     public static Map<ResourceLocation, CurrencyData> getRegisteredCurrencies() {
-        Minecraft minecraft = Minecraft.getInstance();
-        return minecraft.level != null
-                ? getRegisteredCurrencies(minecraft.level.registryAccess())
+        Level level = fetchSidedStaticLevel();
+        return level != null
+                ? getRegisteredCurrencies(level.registryAccess())
                 : Map.of();
     }
 
     public static CurrencyData getCurrencyData(ResourceLocation currency) {
-        Minecraft minecraft = Minecraft.getInstance();
-        return minecraft.level != null
-                ? getCurrencyData(currency, minecraft.level.registryAccess())
+        Level level = fetchSidedStaticLevel();
+        return level != null
+                ? getCurrencyData(currency, level.registryAccess())
                 : null;
     }
 
@@ -67,7 +67,7 @@ public class EternalCurrenciesAPI {
     public static Level fetchSidedStaticLevel() {
         return switch (FMLEnvironment.dist) {
             case CLIENT -> Minecraft.getInstance().level;
-            //case DEDICATED_SERVER -> MinecraftServer.;
+            //case DEDICATED_SERVER ->
             default -> throw new RuntimeException("Sided Level could not be fetched. This should not be possible!");
         };
     }
@@ -79,15 +79,15 @@ public class EternalCurrenciesAPI {
     }
 
     public static MutableComponent getCurrencyTranslationComponent(ResourceLocation currency) {
-        CurrencyData data = getCurrencyData(currency);
-        return Component.translatable("currency."+ currency +".name")
-                .setStyle(data != null ? Style.EMPTY.withColor(data.textColor()) : Style.EMPTY);
+        //CurrencyData data = getCurrencyData(currency);
+        return Component.translatable("currency."+ currency +".name");
+                //.setStyle(data != null ? Style.EMPTY.withColor(data.textColor()) : Style.EMPTY);
     }
 
     public static MutableComponent getCurrencyTranslationComponent(ResourceLocation currency, long amount) {
-        CurrencyData data = getCurrencyData(currency);
-        return Component.translatable("currency."+ currency +".name.with_amount", amount)
-                .setStyle(data != null ? Style.EMPTY.withColor(data.textColor()) : Style.EMPTY);
+        //CurrencyData data = getCurrencyData(currency);
+        return Component.translatable("currency."+ currency +".name.with_amount", amount);
+                //.setStyle(data != null ? Style.EMPTY.withColor(data.textColor()) : Style.EMPTY);
     }
 
     /**
