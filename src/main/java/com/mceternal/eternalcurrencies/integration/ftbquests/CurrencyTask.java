@@ -3,7 +3,6 @@ package com.mceternal.eternalcurrencies.integration.ftbquests;
 import com.mceternal.eternalcurrencies.EternalCurrencies;
 import com.mceternal.eternalcurrencies.api.EternalCurrenciesAPI;
 import dev.ftb.mods.ftblibrary.config.ConfigGroup;
-import dev.ftb.mods.ftblibrary.config.NameMap;
 import dev.ftb.mods.ftblibrary.icon.Icon;
 import dev.ftb.mods.ftbquests.quest.Quest;
 import dev.ftb.mods.ftbquests.quest.TeamData;
@@ -18,8 +17,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-
-import java.util.List;
 
 public class CurrencyTask extends Task {
     private ResourceLocation currency;
@@ -85,12 +82,8 @@ public class CurrencyTask extends Task {
     @OnlyIn(Dist.CLIENT)
     public void fillConfigGroup(ConfigGroup config) {
         super.fillConfigGroup(config);
-        List<ResourceLocation> currencies = EternalCurrenciesAPI.getRegisteredCurrencies().keySet().stream().toList();
 
-        config.addEnum("currency", currency, value -> currency = value, NameMap.of(currency, currencies)
-                .name(value -> Component.literal(value.toString()))
-                .icon(value -> Icon.getIcon(EternalCurrenciesAPI.getCurrencyData(value).icon()))
-                .create(), EternalCurrencies.CURRENCY_COINS);
+        config.addString("currency", currency.toString(), value -> currency = new ResourceLocation(value), EternalCurrencies.CURRENCY_COINS.toString());
 
         config.addLong("amount", amount, value -> amount = value, 10L, 1L, Long.MAX_VALUE);
     }

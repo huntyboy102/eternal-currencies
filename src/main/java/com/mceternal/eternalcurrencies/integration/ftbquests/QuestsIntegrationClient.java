@@ -14,6 +14,7 @@ import java.util.List;
 //TODO possibly deprecate this class. setting it up as desired may be too complicated.
 public class QuestsIntegrationClient {
 
+    /*
     public static void setupTaskGuiProviders() {
         QuestsIntegration.Tasks.CURRENCY.setGuiProvider((panel, quest, callback) -> {
             LongConfig config = new LongConfig(1L, Long.MAX_VALUE);
@@ -52,4 +53,5 @@ public class QuestsIntegrationClient {
                     .create());
         });
     }
+     */
 }

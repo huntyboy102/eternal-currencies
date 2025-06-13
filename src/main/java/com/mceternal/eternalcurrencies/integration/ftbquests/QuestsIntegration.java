@@ -33,4 +33,14 @@ public class QuestsIntegration {
                     () -> COINS_ICON);
         }
     }
+
+    /*
+    public static NameMap<ResourceLocation> currencyNameMap(ResourceLocation currency) {
+        List<ResourceLocation> currencies = EternalCurrenciesAPI.getRegisteredCurrencies().keySet().stream().toList();
+        return NameMap.of(currency, currencies)
+                .name(value -> Component.literal(value.toString()))
+                .icon(value -> Icon.getIcon(EternalCurrenciesAPI.getCurrencyData(value).icon()))
+                .create();
+    };
+     */
 }

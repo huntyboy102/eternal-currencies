@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
+import java.util.stream.Stream;
 
 public class ItemCurrencyCheque extends Item {
 
@@ -34,9 +35,9 @@ public class ItemCurrencyCheque extends Item {
         super(pProperties);
     }
 
-    public static List<ItemStack> getVariantForEachCurrency() {
+    public static List<ItemStack> getVariantForEachCurrency(Stream<ResourceLocation> currencies) {
         List<ItemStack> variants = new ArrayList<>();
-        EternalCurrenciesAPI.getRegisteredCurrencies().forEach((identifier, currencyData) -> {
+        currencies.forEach(identifier -> {
             CompoundTag entry = new CompoundTag();
             entry.putString(KEY_CURRENCY_TYPE, identifier.toString());
             entry.putLong(KEY_CURRENCY_AMOUNT, 10L);
@@ -151,13 +152,13 @@ public class ItemCurrencyCheque extends Item {
             currencyRoot.forEach(tag -> {
                 if (tag instanceof CompoundTag entryTag && validateCurrencyTag(entryTag)) {
                     ResourceLocation currency = new ResourceLocation(entryTag.getString(KEY_CURRENCY_TYPE));
-                    Map<ResourceLocation, CurrencyData> currencyReg = level != null
-                            ? EternalCurrenciesAPI.getRegisteredCurrencies(level.registryAccess())
-                            : EternalCurrenciesAPI.getRegisteredCurrencies();
-                    if(currencyReg.containsKey(currency))
-                        tooltipLines.add(EternalCurrenciesAPI.getCurrencyTranslationComponent(
-                                currency,
-                                entryTag.getLong(KEY_CURRENCY_AMOUNT)));
+                    if(level != null) {
+                        Map<ResourceLocation, CurrencyData> currencyReg = EternalCurrenciesAPI.getRegisteredCurrencies(level.registryAccess());
+                        if (currencyReg.containsKey(currency))
+                            tooltipLines.add(EternalCurrenciesAPI.getCurrencyTranslationComponent(
+                                    currency,
+                                    entryTag.getLong(KEY_CURRENCY_AMOUNT)));
+                    }
                 }
             });
 

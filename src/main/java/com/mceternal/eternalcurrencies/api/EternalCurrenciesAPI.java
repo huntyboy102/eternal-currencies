@@ -9,18 +9,17 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fml.loading.FMLEnvironment;
 
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class EternalCurrenciesAPI {
@@ -44,15 +43,17 @@ public class EternalCurrenciesAPI {
      * Gets all registered Currencies using the static Level variable. May return an empty map if the Currency Registry cannot be accessed.
      * @return Map of all currencies in the Currency Registry.
      */
+    @OnlyIn(Dist.CLIENT)
     public static Map<ResourceLocation, CurrencyData> getRegisteredCurrencies() {
-        Level level = fetchSidedStaticLevel();
+        Level level = Minecraft.getInstance().level;
         return level != null
                 ? getRegisteredCurrencies(level.registryAccess())
                 : Map.of();
     }
 
+    @OnlyIn(Dist.CLIENT)
     public static CurrencyData getCurrencyData(ResourceLocation currency) {
-        Level level = fetchSidedStaticLevel();
+        Level level = Minecraft.getInstance().level;
         return level != null
                 ? getCurrencyData(currency, level.registryAccess())
                 : null;
@@ -62,20 +63,6 @@ public class EternalCurrenciesAPI {
         return registryAccess.registry(EternalCurrenciesRegistries.KEY_CURRENCIES)
                 .orElseThrow(() -> new RuntimeException("Currency registry could not be fetched while attempting to fetch CurrencyData for '"+ currency.toString() +"'."))
                 .get(currency);
-    }
-
-    public static Level fetchSidedStaticLevel() {
-        return switch (FMLEnvironment.dist) {
-            case CLIENT -> Minecraft.getInstance().level;
-            //case DEDICATED_SERVER ->
-            default -> throw new RuntimeException("Sided Level could not be fetched. This should not be possible!");
-        };
-    }
-
-    public static void ifCurrencyRegistered(ResourceLocation currency, Consumer<CurrencyData> dataConsumer) {
-        if(getRegisteredCurrencies().containsKey(currency)) {
-            dataConsumer.accept(getCurrencyData(currency));
-        }
     }
 
     public static MutableComponent getCurrencyTranslationComponent(ResourceLocation currency) {

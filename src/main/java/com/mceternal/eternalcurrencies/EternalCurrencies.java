@@ -31,6 +31,8 @@ import net.minecraftforge.registries.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Optional;
+
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod(EternalCurrencies.MODID)
 public class EternalCurrencies {
@@ -101,8 +103,12 @@ public class EternalCurrencies {
     // Add the example block item to the building blocks tab
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
         if(event.getTab() == EC_CREATIVE_TAB.get()) {
-            ItemCurrencyCheque.getVariantForEachCurrency().forEach(variant ->
-                    event.accept(variant, CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS));
+            Optional<HolderLookup.RegistryLookup<CurrencyData>> currencyLookup = event.getParameters().holders().lookup(EternalCurrenciesRegistries.KEY_CURRENCIES);
+            currencyLookup.ifPresent(registryLookup -> {
+                ItemCurrencyCheque.getVariantForEachCurrency(registryLookup.listElementIds().map(ResourceKey::location))
+                        .forEach(variant -> event.accept(variant, CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS));
+            });
+
             event.accept(EternalCurrenciesItems.DEBIT_CARD);
         }
     }
