@@ -28,7 +28,7 @@ public class EternalCurrenciesClient implements Runnable {
         Minecraft.getInstance().setScreen(shopScreen);
     }
 
-    @SubscribeEvent
+    //@SubscribeEvent
     public void onClientTick(TickEvent.ClientTickEvent event) {
         if(event.phase == TickEvent.ClientTickEvent.Phase.END && KEY_OPEN_SHOP.consumeClick() && Minecraft.getInstance().isWindowActive())
             openShopScreen();

@@ -148,6 +148,21 @@ public class EternalCurrenciesCommands {
                                         context
                                 ))
                         ))
+                //Reset referenced Balance ID to original
+                .then(Commands.literal("resetreference")
+                        .then(Commands.argument("player", EntityArgument.player())
+                                .requires(command -> command.hasPermission(2))
+                                .executes(context -> resetReference(
+                                        EntityArgument.getPlayer(context, "player"),
+                                        context
+                                ))
+                        )
+                        .requires(CommandSourceStack::isPlayer)
+                        .executes(context -> resetReference(
+                                context.getSource().getPlayer(),
+                                context
+                        ))
+                )
         );
 
         //"ec" Alias
@@ -286,6 +301,26 @@ public class EternalCurrenciesCommands {
             return 0;
         }
         source.sendFailure(Component.translatable("commands.eternalcurrencies.setholderaddress.address_does_not_exist", address));
+        return 0;
+    }
+
+    private static int resetReference(ServerPlayer player, CommandContext<CommandSourceStack> context) {
+        CommandSourceStack source = context.getSource();
+        LazyOptional<ICurrencies> lazyCurrencies = player.getCapability(ICurrencies.CAPABILITY);
+
+        if(lazyCurrencies.isPresent()
+                && lazyCurrencies.resolve().get() instanceof ReferenceCurrencyHolder referenceHolder) {
+            UUID playerUUID = player.getUUID();
+            if(referenceHolder.getReference() == playerUUID) {
+                source.sendSystemMessage(Component.translatable("commands.eternalcurrencies.resetreference.already_default", player.getGameProfile().getName()));
+                return 0;
+            }
+            referenceHolder.updateReference(playerUUID);
+            source.sendSuccess(() -> Component.translatable("commands.eternalcurrencies.resetreference.success", player.getGameProfile().getName()), true);
+            return Command.SINGLE_SUCCESS;
+        }
+
+        source.sendFailure(Component.translatable("commands.eternalcurrencies.resetreference.failure", player.getGameProfile().getName()));
         return 0;
     }
 }
