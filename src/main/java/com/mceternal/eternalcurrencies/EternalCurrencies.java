@@ -89,7 +89,7 @@ public class EternalCurrencies {
 
         CREATIVE_MODE_TABS.register(modEventBus);
 
-        DistExecutor.runWhenOn(Dist.CLIENT, EternalCurrenciesClient::new);
+        DistExecutor.runWhenOn(Dist.CLIENT, () -> EternalCurrenciesClient::new);
 
         // Register our mod's ForgeConfigSpec so that Forge can create and load the config file for us
         //context.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
