@@ -8,11 +8,13 @@ import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
 
 public class PacketHandler {
+    private static final String NETWORK_VERSION = "1.0";
+    
     public static final SimpleChannel CHANNEL = NetworkRegistry.ChannelBuilder.named(
             EternalCurrencies.resource("main"))
-            .serverAcceptedVersions(version -> true)
-            .clientAcceptedVersions(version -> true)
-            .networkProtocolVersion(() -> "1.0")
+            .serverAcceptedVersions(NETWORK_VERSION::equals)
+            .clientAcceptedVersions(NETWORK_VERSION::equals)
+            .networkProtocolVersion(() -> NETWORK_VERSION)
             .simpleChannel();
 
     public static void register() {
