@@ -196,18 +196,18 @@ dependencies {
     // For more info:
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
-    implementation ("curse.maven:ftb-quests-forge-289412:6259628")
-    implementation ("curse.maven:ftb-teams-forge-404468:6130786")
-    implementation ("curse.maven:ftb-library-forge-404465:6164053")
+    implementation fg.deobf("curse.maven:ftb-quests-forge-289412:6259628")
+    implementation fg.deobf("curse.maven:ftb-teams-forge-404468:6130786")
+    implementation fg.deobf("curse.maven:ftb-library-forge-404465:6164053")
 
-    implementation ("dev.architectury:architectury-forge:9.2.14")
+    implementation fg.deobf("dev.architectury:architectury-forge:9.2.14")
 
-    implementation ("dev.latvian.mods:kubejs-forge:2001.6.5-build.16")
-    implementation ("dev.latvian.mods:rhino-forge:2001.2.3-build.10")
+    implementation fg.deobf("dev.latvian.mods:kubejs-forge:2001.6.5-build.16")
+    implementation fg.deobf("dev.latvian.mods:rhino-forge:2001.2.3-build.10")
 
-    runtimeOnly ("mezz.jei:jei-${minecraft_version}-forge:${jei_version}")
-    compileOnly ("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}")
-    compileOnly ("mezz.jei:jei-${minecraft_version}-forge-api:${jei_version}")
+    runtimeOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge:${jei_version}")
+    compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}")
+    compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge-api:${jei_version}")
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.

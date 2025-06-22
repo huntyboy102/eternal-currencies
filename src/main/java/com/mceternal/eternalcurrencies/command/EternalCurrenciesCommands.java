@@ -155,8 +155,7 @@ public class EternalCurrenciesCommands {
                                 .executes(context -> resetReference(
                                         EntityArgument.getPlayer(context, "player"),
                                         context
-                                ))
-                        )
+                                )))
                         .requires(CommandSourceStack::isPlayer)
                         .executes(context -> resetReference(
                                 context.getSource().getPlayer(),
@@ -311,7 +310,7 @@ public class EternalCurrenciesCommands {
         if(lazyCurrencies.isPresent()
                 && lazyCurrencies.resolve().get() instanceof ReferenceCurrencyHolder referenceHolder) {
             UUID playerUUID = player.getUUID();
-            if(referenceHolder.getReference() == playerUUID) {
+            if(referenceHolder.getReference().equals(playerUUID)) {
                 source.sendSystemMessage(Component.translatable("commands.eternalcurrencies.resetreference.already_default", player.getGameProfile().getName()));
                 return 0;
             }

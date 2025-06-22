@@ -1,5 +1,6 @@
 package com.mceternal.eternalcurrencies.api.capability;
 
+import com.mceternal.eternalcurrencies.EternalCurrencies;
 import com.mceternal.eternalcurrencies.data.CurrencySavedData;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -71,7 +72,15 @@ public class ReferenceCurrencyHolder implements ICurrencies {
 
     @Override
     public void deserializeNBT(CompoundTag tag) {
-        this.referenceUUID = tag.getUUID(NBTKEY_HOLDER_REFERENCE);
+        try {
+            this.referenceUUID = tag.getUUID(NBTKEY_HOLDER_REFERENCE);
+        } catch (NullPointerException e) {
+            EternalCurrencies.LOGGER.info("Caught NullPointerException loading ReferenceCurrencyHolder capability for a player, repairing with a new instance.");
+            CurrencySavedData saved = getCurrencies();
+            DirectCurrencyHolder savedHolder = saved.getOrCreate(this.referenceUUID);
+            savedHolder.deserializeNBT(tag);
+            saved.setDirty();
+        }
     }
 
     @Override
