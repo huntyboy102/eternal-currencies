@@ -60,7 +60,7 @@ public class EternalCurrencies {
                     .build());
 
     public static ResourceLocation resource(String path) {
-        return new ResourceLocation(MODID, path);
+        return ResourceLocation.fromNamespaceAndPath(MODID, path);
     }
 
     public EternalCurrencies(FMLJavaModLoadingContext context) {
@@ -89,8 +89,7 @@ public class EternalCurrencies {
 
         CREATIVE_MODE_TABS.register(modEventBus);
 
-        DistExecutor.runWhenOn(Dist.CLIENT, () -> EternalCurrenciesClient::new);
-
+        DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> EternalCurrenciesClient::new);
         // Register our mod's ForgeConfigSpec so that Forge can create and load the config file for us
         //context.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
@@ -123,7 +122,7 @@ public class EternalCurrencies {
 
         }
 
-        //@SubscribeEvent
+        @SubscribeEvent
         public static void onRegisterKeybinds(RegisterKeyMappingsEvent event) {
             event.register(EternalCurrenciesClient.KEY_OPEN_SHOP);
         }

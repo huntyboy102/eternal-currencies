@@ -4,6 +4,7 @@ import com.mceternal.eternalcurrencies.EternalCurrencies;
 import com.mceternal.eternalcurrencies.api.shop.ShopEntry;
 import com.mceternal.eternalcurrencies.data.EternalCurrenciesRegistries;
 import com.mceternal.eternalcurrencies.data.shop.ShopCategory;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.Registry;
@@ -15,17 +16,27 @@ import java.util.Objects;
 
 public class CurrencyShopScreen extends Screen {
 
+    private static final ResourceLocation BACKGROUND_TEXTURE =
+            ResourceLocation.fromNamespaceAndPath("eternalcurrencies", "textures/shop/background.png");
+    private final int backgroundWidth = 860;
+    private final int backgroundHeight = 875;
+
     public static ResourceLocation lastCategory;
     private ResourceLocation currentCategory = lastCategory != null ? lastCategory : EternalCurrencies.resource("exchange");
 
     public CurrencyShopScreen() {
-        super(Component.translatable("screen.eternalcurrencies.shop.name"));
+        super(Component.literal("Currency Shop"));
     }
 
     @Override
     protected void init() {
-        loadEntries();
-        addCategoryButtons();
+        super.init();
+        int centerX = (this.width - backgroundWidth) / 2;
+        int centerY = (this.height - backgroundHeight) / 2;
+        //this.addRenderableWidget(new ShopEntryButton(centerX + 10, 0, null, null));
+
+        //loadEntries();
+        //addCategoryButtons();
     }
 
     @Override
@@ -33,9 +44,37 @@ public class CurrencyShopScreen extends Screen {
         return super.getTitle();
     }
 
+    //TODO: Fix scaling
     @Override
     public void render(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
         this.renderBackground(pGuiGraphics);
+
+        // Determine max width/height to fit nicely
+        int maxWidth = (int)(this.width * 0.8);
+        int maxHeight = (int)(this.height * 0.8);
+
+        // Keep aspect ratio
+        float aspectRatio = (float) backgroundWidth / backgroundHeight;
+
+        int drawWidth = maxWidth;
+        int drawHeight = (int)(drawWidth / aspectRatio);
+
+        if(drawHeight > maxHeight) {
+            drawHeight = maxHeight;
+            drawWidth = (int)(drawHeight * aspectRatio);
+        }
+
+        int x = (this.width - drawWidth) / 2;
+        int y = (this.height - drawHeight) / 2;
+
+        pGuiGraphics.blit(
+                BACKGROUND_TEXTURE,
+                x, y,
+                0, 0,
+                drawWidth, drawHeight,
+                drawWidth, drawHeight
+        );
+
         super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
     }
 
