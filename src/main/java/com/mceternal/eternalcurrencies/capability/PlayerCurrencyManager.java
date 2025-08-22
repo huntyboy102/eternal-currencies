@@ -21,14 +21,22 @@ import org.jetbrains.annotations.Nullable;
 @Mod.EventBusSubscriber
 public class PlayerCurrencyManager {
 
+    /**
+     * Attaches the ICurrencies capability to the given player entity.
+     *
+     * @param event The AttachCapabilitiesEvent for attaching capabilities to entities.
+     */
     @SubscribeEvent
     public static void attachPlayerCapability(AttachCapabilitiesEvent<Entity> event) {
-        if(event.getObject() instanceof Player player) {
-
+        if (event.getObject() instanceof Player player) {
+            // Create a new ICurrencies instance with the player's UUID and the server instance
             ICurrencies playerCurrenciesCap = new ReferenceCurrencyHolder(player.getUUID(), () -> player.level().getServer());
+            // Create a LazyOptional containing the ICurrencies instance
             LazyOptional<ICurrencies> opt = LazyOptional.of(() -> playerCurrenciesCap);
+            // Get the ICurrencies capability
             Capability<ICurrencies> capability = ICurrencies.CAPABILITY;
 
+            // Create an ICapabilityProvider that handles serialization and deserialization of the capability
             ICapabilityProvider provider = new ICapabilitySerializable<CompoundTag>() {
                 @Override
                 public CompoundTag serializeNBT() {
@@ -41,29 +49,36 @@ public class PlayerCurrencyManager {
                 }
 
                 @Override
-                public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction direction) {
-
-                    if(cap == capability) {
+                public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction direction) {
+                    if (cap == capability) {
                         return opt.cast();
                     }
                     return LazyOptional.empty();
                 }
             };
 
+            // Attach the ICurrencies capability to the player entity
             event.addCapability(EternalCurrencies.CURRENCIES_CAP_NAME, provider);
         }
     }
 
+    /**
+     * Handles the persistence of the ICurrencies capability when a player respawns.
+     *
+     * @param event The PlayerEvent.Clone event for handling player cloning (respawning).
+     */
     @SubscribeEvent
     public static void persistCapability(PlayerEvent.Clone event) {
-        //EternalCurrencies.LOGGER.info("wasDeath: {}, level.isClientside: {}", event.isWasDeath(), event.getEntity().level().isClientSide);
-        if(event.isWasDeath() && !event.getEntity().level().isClientSide) {
+        if (event.isWasDeath() && !event.getEntity().level().isClientSide()) {
             Player deadPlayer = event.getOriginal();
+            // Revive the capabilities of the original player
             deadPlayer.reviveCaps();
 
+            // Copy the ICurrencies capability from the original player to the new player
             event.getEntity().getCapability(ICurrencies.CAPABILITY).ifPresent(cap ->
                     deadPlayer.getCapability(ICurrencies.CAPABILITY).ifPresent(cap::copy));
 
+            // Invalidate the capabilities of the original player
             deadPlayer.invalidateCaps();
         }
     }

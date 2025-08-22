@@ -16,29 +16,75 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * Abstract class representing a shop entry.
+ * A shop entry defines what can be purchased, its costs, and any requirements to purchase it.
+ *
+ * @param <T> The type of the shop entry.
+ */
 public abstract class ShopEntry<T> {
 
     public static final Codec<ShopEntry> DISPATCH_CODEC =
             ExtraCodecs.lazyInitializedCodec(() -> EternalCurrenciesRegistries.SHOP_ENTRY_TYPES.get().getCodec().dispatch(ShopEntry::codec, MapCodec::codec));
 
+    /**
+     * The unique identifier for this shop entry.
+     */
     public final String id;
+
+    /**
+     * A map of currency IDs and their associated costs for this shop entry.
+     */
     public final Map<ResourceLocation, Long> costs;
+
+    /**
+     * A list of requirements that must be met to purchase this shop entry.
+     */
     public final List<ShopRequirement> requirements;
 
+    /**
+     * Constructs a new instance of ShopEntry with the given ID, costs, and requirements.
+     *
+     * @param id The unique identifier for the shop entry.
+     * @param costs A map of currency IDs and their associated costs.
+     * @param requirements A list of requirements to purchase this shop entry.
+     */
     public ShopEntry(String id, Map<ResourceLocation, Long> costs, List<ShopRequirement> requirements) {
         this.id = id;
         this.costs = costs;
         this.requirements = requirements;
     }
 
-    public ShopEntry(String id, ResourceLocation currency, long cost, List<ShopRequirement> requirements) {
-        this(id, Map.of(currency, cost), requirements);
-    }
-
+    /**
+     * Constructs a new instance of ShopEntry with the given ID, currency, cost, and no requirements.
+     *
+     * @param id The unique identifier for the shop entry.
+     * @param currency The resource location of the currency used to purchase this entry.
+     * @param cost The cost of purchasing this entry in the specified currency.
+     */
     public ShopEntry(String id, ResourceLocation currency, long cost) {
         this(id, Map.of(currency, cost), List.of());
     }
 
+    /**
+     * Constructs a new instance of ShopEntry with the given ID, currency, and cost, along with the specified requirements.
+     *
+     * @param id The unique identifier for the shop entry.
+     * @param currency The resource location of the currency used to purchase this entry.
+     * @param cost The cost of purchasing this entry in the specified currency.
+     * @param requirements A list of requirements to purchase this shop entry.
+     */
+    public ShopEntry(String id, ResourceLocation currency, long cost, List<ShopRequirement> requirements) {
+        this(id, Map.of(currency, cost), requirements);
+    }
+
+    /**
+     * Returns a base codec for the fields common to all shop entries.
+     *
+     * @param inst The record codec builder instance.
+     * @param <T> The type of the shop entry.
+     * @return A products codec representing the fields of the shop entry.
+     */
     public static <T extends ShopEntry> Products.P3<RecordCodecBuilder.Mu<T>, String, Map<ResourceLocation, Long>, List<ShopRequirement>> baseShopEntryFields(RecordCodecBuilder.Instance<T> inst) {
         return inst.group(
                 //TODO make a codec that associates Currency IDs (ResourceLocation) to Long.
@@ -51,42 +97,67 @@ public abstract class ShopEntry<T> {
         );
     }
 
+    /**
+     * Returns the default name for this shop entry.
+     *
+     * @return The default name of the shop entry.
+     */
     public Component getName() {
         return getDefaultName();
     }
 
+    /**
+     * Abstract method to get the default name for this shop entry.
+     *
+     * @return The default name of the shop entry.
+     */
     public abstract Component getDefaultName();
 
+    /**
+     * Returns the content codec for this shop entry type.
+     *
+     * @return The content codec for this shop entry type.
+     */
     public abstract Codec<T> contentCodec();
 
+    /**
+     * Returns the codec for this shop entry type.
+     *
+     * @return The codec for this shop entry type.
+     */
     public abstract MapCodec<? extends ShopEntry> codec();
 
-    //TODO automated purchasing might be cool to allow in the future. possibly a BE that restocks when given redstone pulse?
     /**
-     * If this Object is allowed to Purchase this Entry.
-     * @param holder Object attempting to Purchase this Entry.
-     * @return If this Entry can be Purchased by this Object.
+     * Determines if this shop entry can be purchased by the given server player.
+     *
+     * @param holder The server player attempting to purchase this shop entry.
+     * @return True if the shop entry can be purchased, false otherwise.
      */
     public boolean canPurchase(ServerPlayer holder) {
-        if(!requirements.stream().allMatch(req -> req.meetsRequirement(holder)))
+        if (!requirements.stream().allMatch(req -> req.meetsRequirement(holder)))
             return false;
         AtomicBoolean pass = new AtomicBoolean(false);
         EternalCurrenciesAPI.getCurrencies(holder).ifPresent(currencies -> {
-            if(currencies.hasAtleast(this.costs))
+            if (currencies.hasAtleast(this.costs))
                 pass.set(true);
         });
         return pass.get();
     }
 
     /**
-     * Called after {@link ShopEntry#canPurchase} returns true. </p> resolve any effects of Purchasing the Entry here.
-     * @param holder Object that has Purchased this Entry.
+     * Performs the actions to purchase this shop entry for the given server player.
+     *
+     * @param holder The server player purchasing this shop entry.
      */
     public void purchase(ServerPlayer holder) {
         EternalCurrenciesAPI.getCurrencies(holder).ifPresent(currencies ->
                 this.costs.forEach(currencies::take));
     }
 
-
+    /**
+     * Abstract method to determine if this shop entry can be automatically purchased.
+     *
+     * @return True if this shop entry can be automatically purchased, false otherwise.
+     */
     public abstract boolean autoPurchasable();
 }

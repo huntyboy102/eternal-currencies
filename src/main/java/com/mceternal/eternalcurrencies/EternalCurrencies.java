@@ -43,57 +43,67 @@ public class EternalCurrencies {
     // Directly reference a slf4j logger
     public static final Logger LOGGER = LoggerFactory.getLogger(MODID);
 
+    // Resource location for the currency data capability
     public static final ResourceLocation CURRENCIES_CAP_NAME = resource("currencies");
 
+    // Resource location for the currency coins item
     public static final ResourceLocation CURRENCY_COINS = resource("coins");
 
+    // Check if FTB Quests mod is loaded
     public static boolean FTBQ_LOADED = ModList.get().isLoaded("ftbquests");
 
-
+    // Deferred registry for Creative Mode Tabs
     private static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
-    
+
+    // Register the main creative tab
     public static final RegistryObject<CreativeModeTab> EC_CREATIVE_TAB = CREATIVE_MODE_TABS.register("main",
             () -> CreativeModeTab.builder()
-                    .withTabsBefore(CreativeModeTabs.COMBAT)
-                    .icon(() -> new ItemStack(EternalCurrenciesItems.CHEQUE.get()))
-                    .title(Component.translatable("mod.eternalcurrencies.name"))
+                    .withTabsBefore(CreativeModeTabs.COMBAT)  // Place before Combat tab
+                    .icon(() -> new ItemStack(EternalCurrenciesItems.CHEQUE.get()))  // Icon for the tab
+                    .title(Component.translatable("mod.eternalcurrencies.name"))  // Title of the tab in translation files
                     .build());
 
+    // Utility method to create ResourceLocation objects
     public static ResourceLocation resource(String path) {
         return ResourceLocation.fromNamespaceAndPath(MODID, path);
     }
 
+    // Constructor for EternalCurrencies mod class
     public EternalCurrencies(FMLJavaModLoadingContext context) {
         IEventBus modEventBus = context.getModEventBus();
 
+        // Register items
         EternalCurrenciesItems.register(modEventBus);
 
-        // Register the commonSetup method for modloading
+        // Register common setup method
         modEventBus.addListener(this::commonSetup);
 
-        // Register the item to a creative tab
+        // Add items to creative tab
         modEventBus.addListener(this::addCreative);
 
+        // Register currencies and registries
         modEventBus.addListener(EternalCurrenciesRegistries::registerCurrencies);
-
         modEventBus.addListener(EternalCurrenciesRegistries::addRegistries);
 
+        // Register shop entry types and requirements
         ECShopEntryTypes.register(modEventBus);
         ECShopRequirementTypes.register(modEventBus);
 
-        // Register ourselves for server and other game events we are interested in
+        // Register events for server and other game events
         MinecraftForge.EVENT_BUS.register(this);
 
-        if(FTBQ_LOADED)
+        // Initialize FTB Quests integration if loaded
+        if (FTBQ_LOADED)
             QuestsIntegration.init();
 
+        // Register creative tabs
         CREATIVE_MODE_TABS.register(modEventBus);
 
+        // Run client-specific setup code on the client side
         DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> EternalCurrenciesClient::new);
-        // Register our mod's ForgeConfigSpec so that Forge can create and load the config file for us
-        //context.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
 
+    // Method to perform common setup tasks
     private void commonSetup(final FMLCommonSetupEvent event) {
         event.enqueueWork(() -> {
             PacketHandler.register();
@@ -101,41 +111,47 @@ public class EternalCurrencies {
         });
     }
 
-    // Add the example block item to the building blocks tab
+    // Method to add items to the creative tab
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
-        if(event.getTab() == EC_CREATIVE_TAB.get()) {
+        if (event.getTab() == EC_CREATIVE_TAB.get()) {  // Check if it's our custom tab
             Optional<HolderLookup.RegistryLookup<CurrencyData>> currencyLookup = event.getParameters().holders().lookup(EternalCurrenciesRegistries.KEY_CURRENCIES);
             currencyLookup.ifPresent(registryLookup -> {
                 ItemCurrencyCheque.getVariantForEachCurrency(registryLookup.listElementIds().map(ResourceKey::location))
                         .forEach(variant -> event.accept(variant, CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS));
             });
 
+            // Add debit card to the creative tab
             event.accept(EternalCurrenciesItems.DEBIT_CARD);
         }
     }
 
-    // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
+    // Inner class for client-specific events
     @Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
     public static class ClientModEvents {
+        // Method to handle client setup event
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event) {
 
         }
 
+        // Method to register key bindings for the client side
         @SubscribeEvent
         public static void onRegisterKeybinds(RegisterKeyMappingsEvent event) {
-            event.register(EternalCurrenciesClient.KEY_OPEN_SHOP);
+            event.register(EternalCurrenciesClient.KEY_OPEN_SHOP);  // Register key binding for opening the shop
         }
     }
 
+    // Inner class for server-specific events
     @Mod.EventBusSubscriber(modid = MODID)
     public static class ServerModEvents {
+        // Method to handle command registration on the server side
         @SubscribeEvent
         public static void registerCommands(RegisterCommandsEvent event) {
             EternalCurrenciesCommands.register(event.getDispatcher(), event.getBuildContext());
 
-            //EternalCurrenciesRegistries.SHOP_ENTRY_TYPES.get().forEach(codec ->
-            //        LOGGER.info("ShopEntry Type Registry entry: {}", codec.toString()));
+            // Uncomment the following line to log shop entry type registry entries
+            // EternalCurrenciesRegistries.SHOP_ENTRY_TYPES.get().forEach(codec ->
+            //         LOGGER.info("ShopEntry Type Registry entry: {}", codec.toString()));
         }
     }
 }

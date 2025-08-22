@@ -35,8 +35,8 @@ public class CurrencyShopScreen extends Screen {
         int centerY = (this.height - backgroundHeight) / 2;
         //this.addRenderableWidget(new ShopEntryButton(centerX + 10, 0, null, null));
 
-        //loadEntries();
-        //addCategoryButtons();
+        loadEntries();
+        addCategoryButtons();
     }
 
     @Override
@@ -77,6 +77,7 @@ public class CurrencyShopScreen extends Screen {
 
         super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
     }
+
 
     public void changeCategory(ResourceLocation newCategory) {
         EternalCurrencies.LOGGER.info("Changing category for {} from '{}' to '{}'", this, this.currentCategory, newCategory);

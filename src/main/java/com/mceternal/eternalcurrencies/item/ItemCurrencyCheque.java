@@ -3,7 +3,10 @@ package com.mceternal.eternalcurrencies.item;
 import com.mceternal.eternalcurrencies.api.EternalCurrenciesAPI;
 import com.mceternal.eternalcurrencies.data.CurrencyData;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.*;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NumericTag;
+import net.minecraft.nbt.StringTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
@@ -17,11 +20,9 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import javax.annotation.Nullable;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.stream.Stream;
 
@@ -55,16 +56,13 @@ public class ItemCurrencyCheque extends Item {
         return variants;
     }
 
-    //TODO add bank block and make sure this works
     @Override
     public InteractionResult useOn(UseOnContext context) {
         BlockPos clickedPos = context.getClickedPos();
-        BlockEntity be = context.getLevel().getBlockEntity(clickedPos);
+        ICapabilityProvider be = context.getLevel().getBlockEntity(clickedPos);
         ItemStack held = context.getItemInHand();
         Player player = context.getPlayer();
-        if(be != null
-                && held.hasTag()
-                && validateCurrencyRoot(held.getTag())) {
+        if(be != null && held.hasTag() && validateCurrencyRoot(held.getTag())) {
             redeem(held, be, player, context.getLevel());
             return InteractionResult.SUCCESS;
         }
@@ -78,7 +76,6 @@ public class ItemCurrencyCheque extends Item {
         return InteractionResultHolder.sidedSuccess(stack, level.isClientSide);
     }
 
-    //TODO sound on redeem, possibly specified in CurrencyData
     public static void redeem(ItemStack self, ICapabilityProvider target, Player player, Level level, boolean consumeAll) {
         if(!level.isClientSide && self.hasTag() && validateCurrencyRoot(self.getTag())) {
             int toTurnIn = consumeAll ? self.getCount() : 1;
@@ -105,16 +102,13 @@ public class ItemCurrencyCheque extends Item {
     }
 
     public static boolean validateCurrencyRoot(CompoundTag root) {
-        return root.contains(KEY_CURRENCY_TAG)
-                && root.get(KEY_CURRENCY_TAG) instanceof ListTag;
+        return root.contains(KEY_CURRENCY_TAG) && root.get(KEY_CURRENCY_TAG) instanceof ListTag;
     }
 
     public static boolean validateCurrencyTag(CompoundTag tag) {
         return tag != null
-                && (tag.contains(KEY_CURRENCY_TYPE)
-                    && tag.get(KEY_CURRENCY_TYPE) instanceof StringTag)
-                && (tag.contains(KEY_CURRENCY_AMOUNT)
-                    && tag.get(KEY_CURRENCY_AMOUNT) instanceof NumericTag);
+                && (tag.contains(KEY_CURRENCY_TYPE) && tag.get(KEY_CURRENCY_TYPE) instanceof StringTag)
+                && (tag.contains(KEY_CURRENCY_AMOUNT) && tag.get(KEY_CURRENCY_AMOUNT) instanceof NumericTag);
     }
 
     public static void forCurrencyTag(ListTag currencyTagList, Level level, BiConsumer<ResourceLocation, Long> contentConsumer) {
@@ -161,7 +155,6 @@ public class ItemCurrencyCheque extends Item {
                     }
                 }
             });
-
         }
     }
 }

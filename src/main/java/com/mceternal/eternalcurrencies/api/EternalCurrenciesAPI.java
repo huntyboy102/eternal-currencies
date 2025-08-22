@@ -26,10 +26,12 @@ public class EternalCurrenciesAPI {
 
     /**
      * Gets all registered Currencies. May return an empty Map if the Currency Registry cannot be accessed.
+     *
+     * @param registryAccess The RegistryAccess instance to access the Currency Registry.
      * @return Map of all currencies in the Currency Registry.
      */
     public static Map<ResourceLocation, CurrencyData> getRegisteredCurrencies(RegistryAccess registryAccess) {
-        Optional<Registry<CurrencyData>> currencyReg =  registryAccess.registry(EternalCurrenciesRegistries.KEY_CURRENCIES);
+        Optional<Registry<CurrencyData>> currencyReg = registryAccess.registry(EternalCurrenciesRegistries.KEY_CURRENCIES);
         return currencyReg.map(currencyData -> currencyData
                 .asLookup()
                 .listElements()
@@ -41,6 +43,7 @@ public class EternalCurrenciesAPI {
 
     /**
      * Gets all registered Currencies using the static Level variable. May return an empty map if the Currency Registry cannot be accessed.
+     *
      * @return Map of all currencies in the Currency Registry.
      */
     @OnlyIn(Dist.CLIENT)
@@ -51,6 +54,12 @@ public class EternalCurrenciesAPI {
                 : Map.of();
     }
 
+    /**
+     * Gets a specific currency data based on the provided currency resource location.
+     *
+     * @param currency The resource location of the currency.
+     * @return The currency data if found, or null otherwise.
+     */
     @OnlyIn(Dist.CLIENT)
     public static CurrencyData getCurrencyData(ResourceLocation currency) {
         Level level = Minecraft.getInstance().level;
@@ -59,39 +68,56 @@ public class EternalCurrenciesAPI {
                 : null;
     }
 
+    /**
+     * Gets a specific currency data based on the provided resource location and registry access.
+     *
+     * @param currency The resource location of the currency.
+     * @param registryAccess The RegistryAccess instance to access the Currency Registry.
+     * @return The currency data for the specified currency.
+     */
     public static CurrencyData getCurrencyData(ResourceLocation currency, RegistryAccess registryAccess) {
         return registryAccess.registry(EternalCurrenciesRegistries.KEY_CURRENCIES)
-                .orElseThrow(() -> new RuntimeException("Currency registry could not be fetched while attempting to fetch CurrencyData for '"+ currency.toString() +"'."))
+                .orElseThrow(() -> new RuntimeException("Currency registry could not be fetched while attempting to fetch CurrencyData for '" + currency.toString() + "'."))
                 .get(currency);
     }
 
+    /**
+     * Gets a translation component for the specified currency.
+     *
+     * @param currency The resource location of the currency.
+     * @return A mutable component with the translation key for the currency.
+     */
     public static MutableComponent getCurrencyTranslationComponent(ResourceLocation currency) {
-        //CurrencyData data = getCurrencyData(currency);
-        return Component.translatable("currency."+ currency +".name");
-                //.setStyle(data != null ? Style.EMPTY.withColor(data.textColor()) : Style.EMPTY);
+        return Component.translatable("currency." + currency + ".name");
     }
 
+    /**
+     * Gets a translation component for the specified currency with the given amount.
+     *
+     * @param currency The resource location of the currency.
+     * @param amount The amount to include in the translation key.
+     * @return A mutable component with the translation key and amount for the currency.
+     */
     public static MutableComponent getCurrencyTranslationComponent(ResourceLocation currency, long amount) {
-        //CurrencyData data = getCurrencyData(currency);
-        return Component.translatable("currency."+ currency +".name.with_amount", amount);
-                //.setStyle(data != null ? Style.EMPTY.withColor(data.textColor()) : Style.EMPTY);
+        return Component.translatable("currency." + currency + ".name.with_amount", amount);
     }
 
     /**
      * Gets an Object's Currency Capability.
-     * </p> Recommended when doing multiple operations
-     * @param provider Object to get the Currency Capability of
-     * @return Object's Currency Capability, use {@link LazyOptional#ifPresent} to safely execute.
+     *
+     * @param provider The object to get the Currency Capability of.
+     * @return A LazyOptional containing the object's Currency Capability, use {@link LazyOptional#ifPresent} to safely execute operations.
      */
     public static LazyOptional<ICurrencies> getCurrencies(ICapabilityProvider provider) {
         return provider.getCapability(ICurrencies.CAPABILITY);
     }
 
     /**
-     * Sets the Object's Balance for the specified Currency to the given Amount
-     * @param provider Object to set the Balance of
-     * @param currency Currency to target
-     * @param amount target Amount to set the Currency to
+     * Sets the Object's Balance for the specified Currency to the given amount.
+     *
+     * @param provider The object to set the Balance of.
+     * @param currency The currency to target.
+     * @param amount The target amount to set the Currency to.
      */
     public static void setBalanceFor(ICapabilityProvider provider, ResourceLocation currency, long amount) {
         provider.getCapability(ICurrencies.CAPABILITY).ifPresent(currencies ->
@@ -99,10 +125,11 @@ public class EternalCurrenciesAPI {
     }
 
     /**
-     * Fetch the Object's Balance for the specified Currency.
-     * @param provider Object to fetch the Balance of
-     * @param currency Currency to fetch the Object's Balance for
-     * @return Object's Balance for the Currency
+     * Fetches the Object's Balance for the specified Currency.
+     *
+     * @param provider The object to fetch the Balance of.
+     * @param currency The currency to fetch the Object's Balance for.
+     * @return The Object's Balance for the Currency.
      */
     public static long getBalanceFor(ICapabilityProvider provider, ResourceLocation currency) {
         AtomicLong amount = new AtomicLong(0L);
@@ -112,10 +139,11 @@ public class EternalCurrenciesAPI {
     }
 
     /**
-     * Adds the specified Amount to the Object's Balance for the specified Currency
-     * @param provider Object to add Balance to
-     * @param currency Currency to add to the Object's Balance of
-     * @param amount Amount to add to the Object's Balance
+     * Adds the specified Amount to the Object's Balance for the specified Currency.
+     *
+     * @param provider The object to add Balance to.
+     * @param currency The currency to add to the Object's Balance of.
+     * @param amount The amount to add to the Object's Balance.
      */
     public static void addBalanceFor(ICapabilityProvider provider, ResourceLocation currency, long amount) {
         provider.getCapability(ICurrencies.CAPABILITY).ifPresent(currencies -> currencies.add(currency, amount));
@@ -123,23 +151,24 @@ public class EternalCurrenciesAPI {
 
     /**
      * Removes the specified Amount from the Object's Balance for the specified Currency, but only if it would not cause their Balance to go below 0.
-     * @param provider Object to remove Currency from
-     * @param currency Currency to remove from the Object's Balance of
-     * @param amount Amount to remove from the Object's Balance
-     * @return If the Object's Balance could be decreased without going below 0
+     *
+     * @param provider The object to remove Currency from.
+     * @param currency The currency to remove from the Object's Balance of.
+     * @param amount The amount to remove from the Object's Balance.
+     * @return If the Object's Balance could be decreased without going below 0.
      */
     public static boolean takeBalanceFor(ICapabilityProvider provider, ResourceLocation currency, long amount) {
         return takeBalanceWithThreshold(provider, currency, amount, 0);
     }
 
     /**
-     * Removes the specified amount from the Object's Balance for the specified Currency, but only if it would not go below the Threshold
-     * </p> Can be used to allow "Debt" up to a limit.
-     * @param provider Object to remove Currency from
-     * @param currency Currency to remove from the Object's Balance of
-     * @param amount Amount to remove from the Object's Balance
-     * @param threshold Minimum amount
-     * @return If the Object's Balance could be decreased without going below the Threshold
+     * Removes the specified Amount from the Object's Balance for the specified Currency, but only if it would not go below the Threshold.
+     *
+     * @param provider The object to remove Currency from.
+     * @param currency The currency to remove from the Object's Balance of.
+     * @param amount The amount to remove from the Object's Balance.
+     * @param threshold The minimum amount allowed.
+     * @return If the Object's Balance could be decreased without going below the Threshold.
      */
     public static boolean takeBalanceWithThreshold(ICapabilityProvider provider, ResourceLocation currency, long amount, long threshold) {
         AtomicBoolean success = new AtomicBoolean(false);
@@ -150,9 +179,10 @@ public class EternalCurrenciesAPI {
 
     /**
      * Removes the specified Amount from the Object's Balance for the specified Currency, can go infinitely into the negatives.
-     * @param provider Object to remove Balance from
-     * @param currency Currency to remove from the Object's Balance of
-     * @param amount Amount to remove from the Object's Balance
+     *
+     * @param provider The object to remove Balance from.
+     * @param currency The currency to remove from the Object's Balance of.
+     * @param amount The amount to remove from the Object's Balance.
      */
     public static void takeAnywayFor(ICapabilityProvider provider, ResourceLocation currency, long amount) {
         provider.getCapability(ICurrencies.CAPABILITY).ifPresent(currencies ->
